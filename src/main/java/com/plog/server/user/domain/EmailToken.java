@@ -1,9 +1,6 @@
 package com.plog.server.user.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,12 +14,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "EmailToken_Table")
 public class EmailToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long emailId;
+
     private UUID emailUuid;
 
+    @OneToOne
+    @JoinColumn(name = "tempId", nullable = false)
     private UserTemp userTemp;
 
     private LocalDateTime expirationDate;

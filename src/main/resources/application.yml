@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+
+  #  smtp
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: nkdy50315031@gmail.com
+    password: zczxsylqqelzckrq
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+logging.level:
+  org.hibernate.SQL: debug
