@@ -3,11 +3,13 @@ package com.plog.server.user.api;
 import com.plog.server.global.ApiResponse;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.domain.UserTemp;
+import com.plog.server.user.dto.LoginRequestDto;
 import com.plog.server.user.dto.SignUpRequest;
 import com.plog.server.user.repository.UserRepository;
 import com.plog.server.user.service.EmailService;
 import com.plog.server.user.service.UserService;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,28 @@ public class UserController {
     private final UserRepository userRepository;
     private final UserService userService;
     private final EmailService emailService;
+
+    @PostMapping("/signin")
+    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDto loginRequest, HttpSession session) {
+        try {
+            User user = userService.login(loginRequest);
+
+            // 세션에 사용자 정보 저장
+            session.setAttribute("user", user);
+            ApiResponse apiResponse = new ApiResponse("로그인 성공", user.getUserAccount());
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ApiResponse("서버 오류: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<ApiResponse> logout(HttpSession session) {
+        // 세션 무효화
+        session.invalidate();
+        ApiResponse apiResponse = new ApiResponse("로그아웃 되었습니다.", null);
+        return ResponseEntity.ok(apiResponse);
+    }
 
     @GetMapping("/userId")
     public ResponseEntity<User> getUserByUUID(@RequestParam Long userId) {
