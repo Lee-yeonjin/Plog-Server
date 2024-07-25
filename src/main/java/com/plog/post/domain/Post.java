@@ -1,0 +1,42 @@
+package com.plog.post.domain;
+
+import com.plog.server.user.domain.User;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Table(name = "Post_Table")
+public class Post {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long postId;
+
+    private String title;
+
+    private String content;
+
+    private int joinCount;
+
+    private String place;
+
+    private LocalDateTime time;
+
+    private String schedule;
+
+    @OneToOne (fetch = FetchType.LAZY)
+    private User user;
+
+    @PrePersist
+    public void prePersist() {
+        this.joinCount = 0;
+    }
+}
