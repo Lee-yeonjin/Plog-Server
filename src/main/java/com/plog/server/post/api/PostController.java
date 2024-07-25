@@ -1,4 +1,4 @@
-package com.plog.post.api;
+package com.plog.server.post.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;

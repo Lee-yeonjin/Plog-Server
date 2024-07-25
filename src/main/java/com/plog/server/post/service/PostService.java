@@ -1,4 +1,4 @@
-package com.plog.post.service;
+package com.plog.server.post.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

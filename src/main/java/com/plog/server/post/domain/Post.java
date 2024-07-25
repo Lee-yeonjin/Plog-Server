@@ -1,4 +1,4 @@
-package com.plog.post.domain;
+package com.plog.server.post.domain;
 
 import com.plog.server.user.domain.User;
 import jakarta.persistence.*;

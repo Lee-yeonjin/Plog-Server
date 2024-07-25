@@ -1,4 +1,4 @@
-package com.plog.post.domain;
+package com.plog.server.post.domain;
 
 import com.plog.server.user.domain.User;
 import jakarta.persistence.*;
@@ -10,11 +10,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "Participation_Table")
-public class Join {
+@Table(name = "Like_Table")
+public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long joinId;
+    private Long likeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
