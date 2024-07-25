@@ -6,6 +6,7 @@ import com.plog.server.user.dto.SignUpRequest;
 import com.plog.server.user.repository.EmailTokenRepository;
 import com.plog.server.user.repository.UserRepository;
 import com.plog.server.user.repository.UserTempRepository;
+import com.plog.server.user.dto.LoginRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,21 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserTempRepository userTempRepository;
     private final EmailTokenRepository emailTokenRepository;
+
+    // 로그인
+    public User login(LoginRequestDto loginRequestDto) {
+        String userAccount = loginRequestDto.getUserAccount();
+        String userPw = loginRequestDto.getUserPw(); // 수정된 부분
+
+        User user = userRepository.findByUserAccount(userAccount);
+        if (user == null || !user.getUserPw().equals(userPw)) {
+            throw new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다.");
+        }
+
+        log.info("로그인 성공 : {}", userAccount);
+        return user;
+    }
+
 
     //임시 회원 가입
     public UserTemp signUpUserTemp(SignUpRequest request){
@@ -62,3 +78,6 @@ public class UserService {
     }
 
 }
+
+
+

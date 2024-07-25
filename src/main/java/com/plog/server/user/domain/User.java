@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-
 @Entity
 @Getter
 @NoArgsConstructor
@@ -23,12 +22,15 @@ public class User {
 
     private UUID userUUID;
 
+    @Column(unique = true)
     private String userAccount;
 
+    @Column(nullable = false)
     private String userPw;
 
     private String userNickname;
 
+    @Column(unique = true)
     private String userEmail;
 
     private boolean userMembership;
