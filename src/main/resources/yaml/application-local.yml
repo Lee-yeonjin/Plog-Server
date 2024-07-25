@@ -1,11 +1,8 @@
-server:
-  port: 8080
-
 # log setting
 logging:
   level:
     com:
-      USWRandomChat:
+      Plog:
         backend: debug
 
 spring:
@@ -17,7 +14,7 @@ spring:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:tcp://localhost/~/Plog
     username: sa
-    password: 1234
+    password:
 
   jpa:
     hibernate:

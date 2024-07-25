@@ -26,4 +26,7 @@ public class UserTemp {
     private String tempEmail;
 
     private boolean tempEmailStatus;
+
+    @OneToOne(mappedBy = "userTemp", cascade = CascadeType.ALL, orphanRemoval = true)
+    private EmailToken emailToken;
 }
