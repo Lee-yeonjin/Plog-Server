@@ -33,7 +33,6 @@ public class EmailToken {
 
     private boolean expired;
 
-    //이메일 인증 토큰 생성
     public  static  EmailToken createEmailToken(UserTemp userTemp){
         EmailToken emailToken = EmailToken.builder()
                 .expirationDate(LocalDateTime.now().plusMinutes(EMAIL_TOKEN_EXPIRATION_TIME_VALUE))

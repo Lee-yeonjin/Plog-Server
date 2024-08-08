@@ -3,6 +3,7 @@ package com.plog.server.user.service;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.domain.UserTemp;
 import com.plog.server.user.dto.SignUpRequest;
+import com.plog.server.user.dto.UserResponseDto;
 import com.plog.server.user.repository.EmailTokenRepository;
 import com.plog.server.user.repository.UserRepository;
 import com.plog.server.user.repository.UserTempRepository;
@@ -22,12 +23,16 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserTempRepository userTempRepository;
-    private final EmailTokenRepository emailTokenRepository;
+
+    //UUID 조회 추가
+    public Optional<User> getUserByUUID(UUID useruuid) {
+        return userRepository.findByUserUUID(useruuid);
+    }
 
     // 로그인
-    public User login(LoginRequestDto loginRequestDto) {
+    public UserResponseDto login(LoginRequestDto loginRequestDto) {
         String userAccount = loginRequestDto.getUserAccount();
-        String userPw = loginRequestDto.getUserPw(); // 수정된 부분
+        String userPw = loginRequestDto.getUserPw();
 
         User user = userRepository.findByUserAccount(userAccount);
         if (user == null || !user.getUserPw().equals(userPw)) {
@@ -35,9 +40,10 @@ public class UserService {
         }
 
         log.info("로그인 성공 : {}", userAccount);
-        return user;
-    }
 
+        return new UserResponseDto(user.getUserUUID(), user.getUserNickname());
+
+    }
 
     //임시 회원 가입
     public UserTemp signUpUserTemp(SignUpRequest request){
@@ -76,7 +82,6 @@ public class UserService {
 
         return true;
     }
-
 }
 
 
