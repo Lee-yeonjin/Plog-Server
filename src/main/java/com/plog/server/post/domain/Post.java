@@ -4,9 +4,7 @@ import com.plog.server.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -28,15 +26,16 @@ public class Post {
 
     private String place;
 
-    private LocalDateTime time;
+    private LocalDate time;
 
     private String schedule;
 
-    @OneToOne (fetch = FetchType.LAZY)
+    @ManyToOne
     private User user;
 
     @PrePersist
     public void prePersist() {
-        this.joinCount = 0;
+        this.joinCount = 0; // 참여를 몇 명 눌렀는지
+        this.time = LocalDate.now();
     }
 }

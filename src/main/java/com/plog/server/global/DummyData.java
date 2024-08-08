@@ -29,8 +29,8 @@ public class DummyData {
                 .userNickname("플로거")
                 .userUUID(UUID.randomUUID())
                 .build();
-
         userRepository.save(user);
+
         log.info("주입성공");
 
         Location location = Location.builder()
@@ -58,6 +58,7 @@ public class DummyData {
         locationRepository.save(location3);
 
         log.info("위치 정보 저장");
+
     }
 
 }

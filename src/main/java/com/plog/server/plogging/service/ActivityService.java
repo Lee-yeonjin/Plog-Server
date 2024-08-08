@@ -31,7 +31,9 @@ public class ActivityService {
     @Transactional
     public User startActivity(UUID uuid) {
         // 사용자 조회
-        User user = userRepository.findByUserUUID(uuid);
+        User user = userRepository.findByUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
+        ;
 
         // 사용자 플로깅 상태 업데이트
         user.setUserPloggingStatus(true);
@@ -43,7 +45,9 @@ public class ActivityService {
     @Transactional
     public ActivityResponse endActivity(UUID uuid, ActivityRequest activityRequest) {
         // 사용자 조회
-        User user = userRepository.findByUserUUID(uuid);
+        User user = userRepository.findByUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
+        ;
 
         // 사용자 플로깅 상태 업데이트
         user.setUserPloggingStatus(false);
@@ -73,7 +77,9 @@ public class ActivityService {
 
     public List<ActivityResponse> getActivitiesByUserUUID(UUID userUUID) {
         // 사용자 조회
-        User user = userRepository.findByUserUUID(userUUID);
+        User user = userRepository.findByUserUUID(userUUID)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + userUUID));
+        ;
 
         // 사용자의 모든 액티비티 조회
         List<Activity> activities = activityRepository.findByUser(user);
