@@ -26,9 +26,7 @@ public class DummyData {
                 .userNickname("플로거")
                 .userUUID(UUID.randomUUID())
                 .build();
-
         userRepository.save(user);
-        log.info("주입성공");
     }
 
 }

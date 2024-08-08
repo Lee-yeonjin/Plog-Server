@@ -1,5 +1,6 @@
 package com.plog.server.user.dto;
 
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -9,9 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class LoginRequestDto {
-    private String userAccount;
-    private String userUUID;
+public class UserResponseDto {
+    private UUID userUUID;
     private String userNickname;
-    private String userPw;
 }
