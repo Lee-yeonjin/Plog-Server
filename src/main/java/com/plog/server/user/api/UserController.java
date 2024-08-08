@@ -4,6 +4,7 @@ import com.plog.server.global.ApiResponse;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.domain.UserTemp;
 import com.plog.server.user.dto.LoginRequestDto;
+import com.plog.server.user.dto.SignUpFinishRequest;
 import com.plog.server.user.dto.SignUpRequest;
 import com.plog.server.user.repository.UserRepository;
 import com.plog.server.user.service.EmailService;
@@ -67,11 +68,21 @@ public class UserController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/confirm-email")
-    public ResponseEntity<ApiResponse> confrimEmail(@RequestParam UUID uuid){
-        UserTemp userTemp = emailService.findByUuid(uuid);
-        userService.signUpUser(userTemp);
+    //회원가입 완료
+    @PostMapping("/sign-up-finish")
+    public ResponseEntity<ApiResponse> signUpFinish(@RequestBody SignUpFinishRequest signUpFinishRequest) {
+        return ResponseEntity.ok(new ApiResponse(userService.signUpFinish(signUpFinishRequest.getAccount()), HttpStatus.OK));
+    }
 
-        return ResponseEntity.ok(new ApiResponse(("인증 성공")));
+    @GetMapping("/confirm-email")
+    public ResponseEntity<ApiResponse> confrimEmail(@RequestParam String uuid){
+        log.info("받은 UUID: {}", uuid);
+
+        UserTemp userTemp = emailService.findByUuid(uuid);
+
+        log.info("찾은 UserTemp: {}", userTemp);
+
+        userService.signUpUser(userTemp);
+        return ResponseEntity.ok(new ApiResponse("인증 성공"));
     }
 }

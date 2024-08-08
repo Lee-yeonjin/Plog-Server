@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.security.auth.login.AccountException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -57,6 +58,23 @@ public class UserService {
 
     public Optional<User> getUserByUUID(Long userid) {
         return userRepository.findByUserId(userid);
+    }
+
+    // 이메일 인증 확인 후 회원가입 완료
+    public String signUpFinish(String account) {
+
+        User user = userRepository.findByUserAccount(account);
+        if (user == null) {
+            throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
+        }
+
+        log.info("이메일 인증된 회원: {}", account);
+
+        return "true";
+    }
+
+    public User getUserByUuid(UUID uuid){
+        return  userRepository.findByUserUUID(uuid);
     }
 
     @Transactional

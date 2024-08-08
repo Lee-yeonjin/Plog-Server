@@ -24,7 +24,7 @@ public class EmailToken {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(length = 36)
-    private UUID emailUuid;
+    private String emailUuid;
 
     @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private UserTemp userTemp;
