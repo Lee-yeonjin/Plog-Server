@@ -4,7 +4,6 @@ import com.plog.server.user.domain.User;
 import com.plog.server.user.domain.UserTemp;
 import com.plog.server.user.dto.SignUpRequest;
 import com.plog.server.user.dto.UserResponseDto;
-import com.plog.server.user.repository.EmailTokenRepository;
 import com.plog.server.user.repository.UserRepository;
 import com.plog.server.user.repository.UserTempRepository;
 import com.plog.server.user.dto.LoginRequestDto;
@@ -63,6 +62,23 @@ public class UserService {
 
     public Optional<User> getUserByUUID(Long userid) {
         return userRepository.findByUserId(userid);
+    }
+
+    // 이메일 인증 확인 후 회원가입 완료
+    public String signUpFinish(String account) {
+
+        User user = userRepository.findByUserAccount(account);
+        if (user == null) {
+            throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
+        }
+
+        log.info("이메일 인증된 회원: {}", account);
+
+        return "true";
+    }
+
+    public Optional<User> getUserByUuid(UUID uuid){
+        return  userRepository.findByUserUUID(uuid);
     }
 
     @Transactional

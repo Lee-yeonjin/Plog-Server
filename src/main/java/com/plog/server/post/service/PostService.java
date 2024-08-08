@@ -14,14 +14,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
 public class PostService {
+
     private final JoinRepository joinRepository;
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;

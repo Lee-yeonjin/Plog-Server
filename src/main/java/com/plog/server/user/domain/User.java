@@ -37,4 +37,8 @@ public class User {
 
     private boolean userPloggingStatus;
 
+    public void setUserPloggingStatus(boolean b) {
+        this.userPloggingStatus = b;
+    }
+
 }

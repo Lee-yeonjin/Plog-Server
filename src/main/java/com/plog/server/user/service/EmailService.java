@@ -1,5 +1,6 @@
 package com.plog.server.user.service;
 
+import com.plog.server.user.config.EmailConfig;
 import com.plog.server.user.domain.EmailToken;
 import com.plog.server.user.domain.UserTemp;
 import com.plog.server.user.repository.EmailTokenRepository;
@@ -25,6 +26,7 @@ public class EmailService {
     private static final String CONFIRM_EMAIL_PATH = "/user/confirm-email";
     private final JavaMailSender javaMailSender;
     private final EmailTokenRepository emailTokenRepository;
+    private final EmailConfig emailConfig;
 
     @Async
     public void sendEmail(MimeMessage mimeMessage) {
@@ -55,13 +57,13 @@ public class EmailService {
         helper.setFrom("nkdy50315031@gmail.com");
 
         String emailContent
-                = "<a href='" +"http://localhost:8080" + CONFIRM_EMAIL_PATH + "?uuid=" + emailToken.getEmailUuid() + "'>이메일 확인</a>";
+                = "<a href='" + emailConfig.getBaseUrl() + CONFIRM_EMAIL_PATH + "?uuid=" + emailToken.getEmailUuid() + "'>이메일 확인</a>";
         helper.setText(emailContent, true);
         return  mimeMessage;
     }
 
     //uuid로 usertemp 조히
-    public  UserTemp findByUuid(UUID uuid){
+    public  UserTemp findByUuid(String uuid){
         return emailTokenRepository.findByEmailUuid(uuid)
                 .map(EmailToken::getUserTemp)
                 .orElseThrow(()->new IllegalArgumentException("uuid에 해당하는 usertemp조회 실패"+ uuid));

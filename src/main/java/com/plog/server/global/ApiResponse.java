@@ -7,16 +7,15 @@ import lombok.Setter;
 @Setter
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiResponse {
+public class ApiResponse<T> {
     private String message;
-    private Object data;
+    private T data;
 
     public ApiResponse(String message) {
         this.message = message;
     }
 
-    //데이터를 포함하는 경우
-    public ApiResponse(String message, Object data) {
+    public ApiResponse(String message, T data) {
         this.message = message;
         this.data = data;
     }
