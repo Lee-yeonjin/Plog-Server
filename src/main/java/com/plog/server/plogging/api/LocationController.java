@@ -34,8 +34,11 @@ public class LocationController {
     @MessageMapping("/location")
     @SendTo("/topic/locations")
     public ApiResponse handleLocation(UUID uuid, LocationMessage message) {
+
         User user = userService.getUserByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
+
+        log.info("메시지 전송");
 
         Location location = Location.builder()
                 .user(user)
