@@ -1,5 +1,6 @@
 package com.plog.server.plogging.service;
 
+import com.plog.server.global.ApiResponse;
 import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.dto.ActivityRequest;
@@ -86,6 +87,55 @@ public class ActivityService {
 
         // ActivityResponse로 변환하여 반환
         return activities.stream()
+                .map(ActivityResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public ActivityResponse getActivityByUserUUIDAndId(UUID userUUID, Long activityId) {
+        // 사용자 조회
+        User user = userRepository.findByUserUUID(userUUID)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + userUUID));
+
+        // 특정 활동 조회
+        Activity activity = activityRepository.findByUserAndActivityId(user, activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Activity not found with ID: " + activityId));
+
+        // ActivityResponse로 변환하여 반환
+        return new ActivityResponse(activity);
+    }
+
+    public Boolean setRouteStatus(UUID uuid,  Long activityId) {
+        // 사용자 조회
+        User user = userRepository.findByUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
+
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Activity not found with ID: " + activityId));
+
+        // routeStatus를 true로 설정
+        activity.setRouteStatus();
+
+        // 변경된 액티비티 저장
+        activityRepository.save(activity);
+
+        return true;
+    }
+
+    // routeStatus가 true인 모든 액티비티 조회
+    public List<ActivityResponse> getAllRoute() {
+        List<Activity> activeActivities = activityRepository.findByRouteStatus(true);
+        return activeActivities.stream()
+                .map(ActivityResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    // 특정 사용자의 routeStatus가 true인 모든 액티비티 조회
+    public List<ActivityResponse> getAllRouteByUser(UUID uuid) {
+        User user = userRepository.findByUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
+
+        List<Activity> activeActivities = activityRepository.findByUserAndRouteStatus(user, true);
+        return activeActivities.stream()
                 .map(ActivityResponse::new)
                 .collect(Collectors.toList());
     }

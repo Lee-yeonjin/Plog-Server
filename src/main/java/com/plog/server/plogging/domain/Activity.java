@@ -22,7 +22,7 @@ public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ActivityId;
+    private Long activityId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
@@ -34,4 +34,12 @@ public class Activity {
     private Integer ploggingTime;
 
     private Double distance;
+
+    private Boolean routeStatus = false;
+
+    public void setRouteStatus(){
+        this.routeStatus = Boolean.TRUE;
+    }
+
 }
+

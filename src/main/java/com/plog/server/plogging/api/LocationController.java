@@ -36,7 +36,6 @@ public class LocationController {
     public ApiResponse handleLocation(UUID uuid, LocationMessage message) {
         User user = userService.getUserByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
-        ;
 
         Location location = Location.builder()
                 .user(user)
