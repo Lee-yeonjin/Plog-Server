@@ -23,7 +23,6 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/plogging")
 @Slf4j
 public class LocationController {
 
@@ -33,12 +32,12 @@ public class LocationController {
 
     @MessageMapping("/location")
     @SendTo("/topic/locations")
-    public ApiResponse handleLocation(UUID uuid, LocationMessage message) {
+    public ApiResponse handleLocation(LocationMessage message) {
+
+        UUID uuid = message.getUuid();
 
         User user = userService.getUserByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
-
-        log.info("메시지 전송");
 
         Location location = Location.builder()
                 .user(user)
@@ -48,7 +47,7 @@ public class LocationController {
 
         locationRepository.save(location);
 
-        log.info("Received location message: {}", message);
+        log.info("실시간 위치 정보 받기: {}", message);
 
         return new ApiResponse("위치 받아오기",location);
     }
