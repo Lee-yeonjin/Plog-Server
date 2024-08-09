@@ -1,6 +1,5 @@
 package com.plog.server.plogging.service;
 
-import com.plog.server.global.ApiResponse;
 import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.dto.ActivityRequest;
@@ -15,9 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +25,7 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
+    private final GeocodeService geocodeService;
 
     @Transactional
     public User startActivity(UUID uuid) {
@@ -48,7 +46,6 @@ public class ActivityService {
         // 사용자 조회
         User user = userRepository.findByUserUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
-        ;
 
         // 사용자 플로깅 상태 업데이트
         user.setUserPloggingStatus(false);
@@ -57,12 +54,24 @@ public class ActivityService {
         // 사용자와 연관된 아직 Activity와 연결되지 않은 Location 조회
         List<Location> locations = locationRepository.findByUserUserUUIDAndActivityIsNull(uuid);
 
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        ActivityResponse resultDTO1 = geocodeService.getAddress(activityRequest.getLatitude1(), activityRequest.getLongitude1());
+        String place1 = resultDTO1.getPlace() != null ? resultDTO1.getPlace() : "";
+        response.put("place1", place1);
+
+        ActivityResponse resultDTO2 = geocodeService.getAddress(activityRequest.getLatitude2(), activityRequest.getLongitude2());
+        String place2 = resultDTO2.getPlace() != null ? resultDTO2.getPlace() : "";
+        response.put("place2", place2);
+
         // 새로운 활동 생성
         Activity activity = Activity.builder()
                 .user(user)
                 .ploggingTime(activityRequest.getAcitvityTime())
                 .distance(activityRequest.getDistance())
                 .locations(locations) // 위치 정보 저장
+                .startPlace(place1)
+                .endPlace(place2)
                 .build();
         // 액티비티 저장
         activityRepository.save(activity);

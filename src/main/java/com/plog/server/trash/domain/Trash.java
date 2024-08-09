@@ -1,6 +1,5 @@
 package com.plog.server.trash.domain;
 
-import com.plog.server.place.domain.Place;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,10 +32,6 @@ public class Trash {
     private int trash_sum; // 전체 쓰레기 개수
 
     private LocalDate date;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "place_id")
-    private Place place;
 
     @PrePersist
     public void prePersist() {
