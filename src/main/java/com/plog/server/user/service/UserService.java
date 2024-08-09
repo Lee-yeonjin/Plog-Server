@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -97,6 +98,11 @@ public class UserService {
         log.info("임시 회원 삭제 완료: {}", user.getUserAccount());
 
         return true;
+    }
+
+    //플로깅 중이 유저 조회
+    public List<User> getActiveUsers() {
+        return userRepository.findByUserPloggingStatus(true);
     }
 }
 
