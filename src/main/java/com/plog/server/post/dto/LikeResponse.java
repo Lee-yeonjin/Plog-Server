@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -12,13 +13,14 @@ import java.time.LocalDate;
 public class LikeResponse {
     private Long postId;
     private String title;
-    private LocalDate time;
+    private String  time;
     private String userNickname;
 
     public LikeResponse(Long postId, String title, LocalDate time, String userNickname) {
         this.postId = postId;
         this.title = title;
-        this.time = time;
+        this.time = time.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
         this.userNickname = userNickname;
     }
 }
+

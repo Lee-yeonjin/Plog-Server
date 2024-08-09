@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +54,9 @@ public class GeocodeService {
             if (results != null && !results.isEmpty()) {
                 Map<String, Object> result = results.get(0);
                 String formattedAddress = (String) result.get("formatted_address");
-                responseDTO.setPlace(formattedAddress);
+
+                String relevantAddress = extractRelevantPart(formattedAddress);
+                responseDTO.setPlace(relevantAddress);
 
                 List<Map<String, Object>> addressComponents = (List<Map<String, Object>>) result.get("address_components");
                 for (Map<String, Object> component : addressComponents) {
@@ -73,5 +76,10 @@ public class GeocodeService {
             e.printStackTrace();
         }
         return responseDTO;
+    }
+
+    private String extractRelevantPart(String address) {
+        String[] parts = address.split(" ");
+        return String.join(" ", Arrays.copyOfRange(parts, 3, parts.length));
     }
 }

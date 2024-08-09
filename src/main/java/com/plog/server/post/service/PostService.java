@@ -130,13 +130,12 @@ public class PostService {
                     return new LikeResponse(
                             post.getPostId(),
                             post.getTitle(),
-                            post.getTime(),
+                            post.getTime(), // LocalDate를 그대로 전달
                             post.getUser().getUserNickname()
                     );
                 })
                 .collect(Collectors.toList());
     }
-
 
     public Post createPost(Post post) {
 
@@ -157,7 +156,7 @@ public class PostService {
                 post.getTitle(),
                 post.getContent(),
                 post.getPlace(),
-                post.getTime(),
+                post.getTime(), // LocalDate를 그대로 전달
                 post.getSchedule(),
                 post.getUser().getUserNickname()
         );
@@ -168,7 +167,7 @@ public class PostService {
                 .map(post -> new PostListResponse(
                         post.getPostId(),
                         post.getTitle(),
-                        post.getTime(),
+                        post.getTime(), // LocalDate를 그대로 전달
                         post.getUser().getUserNickname()))
                 .collect(Collectors.toList());
     }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -14,6 +15,13 @@ import java.time.LocalDate;
 public class PostListResponse {
     private Long postId;
     private String title;
-    private LocalDate time;
+    private String time;
     private String userNickname;
+
+    public PostListResponse(Long postId, String title, LocalDate time, String userNickname) {
+        this.postId = postId;
+        this.title = title;
+        this.time = time.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")); // 포맷팅
+        this.userNickname = userNickname;
+    }
 }

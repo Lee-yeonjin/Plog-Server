@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,12 +31,12 @@ public class PostController {
         User user = userService.getUserByUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        Post post = Post.builder() // Post 객체를 생성
+        Post post = Post.builder()
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
                 .place(postRequest.getPlace())
                 .schedule(postRequest.getSchedule())
-                .time(postRequest.getTime())
+                .time(LocalDate.now()) // String을 LocalDate로 변환
                 .user(user)
                 .joinCount(0)
                 .build();

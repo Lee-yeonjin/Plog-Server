@@ -50,4 +50,3 @@ public class GeocodeController {
         return response;
     }
 }
-
