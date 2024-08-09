@@ -20,10 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -92,5 +89,9 @@ public class UserController {
 
         userService.signUpUser(userTemp);
         return ResponseEntity.ok(new ApiResponse("인증 성공"));
+    }
+    @GetMapping("/active")
+    public List<User> getActiveUsers() {
+        return userService.getActiveUsers();
     }
 }
