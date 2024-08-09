@@ -24,8 +24,6 @@ public class ActivityResponse {
 
     private String endPlace;
 
-    private String place;
-
     public ActivityResponse(Activity activity){
         this.ActivityId = activity.getActivityId();
         this.ploggingTime = activity.getPloggingTime();

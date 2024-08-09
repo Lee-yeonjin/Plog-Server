@@ -54,15 +54,9 @@ public class ActivityService {
         // 사용자와 연관된 아직 Activity와 연결되지 않은 Location 조회
         List<Location> locations = locationRepository.findByUserUserUUIDAndActivityIsNull(uuid);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-
-        ActivityResponse resultDTO1 = geocodeService.getAddress(activityRequest.getLatitude1(), activityRequest.getLongitude1());
-        String place1 = resultDTO1.getPlace() != null ? resultDTO1.getPlace() : "";
-        response.put("place1", place1);
-
-        ActivityResponse resultDTO2 = geocodeService.getAddress(activityRequest.getLatitude2(), activityRequest.getLongitude2());
-        String place2 = resultDTO2.getPlace() != null ? resultDTO2.getPlace() : "";
-        response.put("place2", place2);
+        // 주소 정보 설정
+        String startPlace = geocodeService.getAddress(activityRequest.getLatitude1(), activityRequest.getLongitude1());
+        String endPlace = geocodeService.getAddress(activityRequest.getLatitude2(), activityRequest.getLongitude2());
 
         // 새로운 활동 생성
         Activity activity = Activity.builder()
@@ -70,9 +64,10 @@ public class ActivityService {
                 .ploggingTime(activityRequest.getAcitvityTime())
                 .distance(activityRequest.getDistance())
                 .locations(locations) // 위치 정보 저장
-                .startPlace(place1)
-                .endPlace(place2)
+                .startPlace(startPlace)
+                .endPlace(endPlace)
                 .build();
+
         // 액티비티 저장
         activityRepository.save(activity);
 
