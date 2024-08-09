@@ -37,6 +37,10 @@ public class Activity {
 
     private Boolean routeStatus = false;
 
+    private String startPlace;
+
+    private String endPlace;
+
     public void setRouteStatus(){
         this.routeStatus = Boolean.TRUE;
     }

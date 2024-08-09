@@ -19,10 +19,19 @@ public class ActivityResponse {
     private Integer ploggingTime;
 
     private Double distance;
+
+    private String startPlace;
+
+    private String endPlace;
+
+    private String place;
+
     public ActivityResponse(Activity activity){
         this.ActivityId = activity.getActivityId();
         this.ploggingTime = activity.getPloggingTime();
         this.distance = activity.getDistance();
         this.locations = activity.getLocations();
+        this.startPlace = activity.getStartPlace();
+        this.endPlace = activity.getEndPlace();
     }
 }
