@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "BadgeOwn")
-public class BadgeOwn {
+@Table(name = "MyBadge_Table")
+public class MyBadge {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long badgeOwnId;
+    Long myBadgeId;
 }
