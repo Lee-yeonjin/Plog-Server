@@ -1,6 +1,6 @@
 package com.plog.server.post.domain;
 
-import com.plog.server.user.domain.User;
+import com.plog.server.profile.domain.Profile;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,8 +17,8 @@ public class Like {
     private Long likeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

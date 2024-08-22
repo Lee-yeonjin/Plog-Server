@@ -30,24 +30,24 @@ public class UserController {
     private final UserService userService;
     private final EmailService emailService;
 
-    @PostMapping("/signin")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDto loginRequest, HttpSession session) {
-        try {
-            UserResponseDto userResponseDto = userService.login(loginRequest);
-
-            session.setAttribute("user", userResponseDto);
-
-            ApiResponse apiResponse = new ApiResponse(userResponseDto.getUserUUID().toString(), userResponseDto.getUserNickname());
-
-            Map<String, Object> responseData = new HashMap<>();
-            responseData.put("userUUID", userResponseDto.getUserUUID().toString());
-            responseData.put("userNickname", userResponseDto.getUserNickname());
-
-            return ResponseEntity.ok(new ApiResponse("로그인 성공", responseData));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ApiResponse("서버 오류: " + e.getMessage()));
-        }
-    }
+//    @PostMapping("/signin")
+//    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDto loginRequest, HttpSession session) {
+//        try {
+//            UserResponseDto userResponseDto = userService.login(loginRequest);
+//
+//            session.setAttribute("user", userResponseDto);
+//
+//            ApiResponse apiResponse = new ApiResponse(userResponseDto.getUserUUID().toString(), userResponseDto.getUserNickname());
+//
+//            Map<String, Object> responseData = new HashMap<>();
+//            responseData.put("userUUID", userResponseDto.getUserUUID().toString());
+//            responseData.put("userNickname", userResponseDto.getUserNickname());
+//
+//            return ResponseEntity.ok(new ApiResponse("로그인 성공", responseData));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body(new ApiResponse("서버 오류: " + e.getMessage()));
+//        }
+//    }
 
     @PostMapping("/signout")
     public ResponseEntity<ApiResponse> logout(HttpSession session) {

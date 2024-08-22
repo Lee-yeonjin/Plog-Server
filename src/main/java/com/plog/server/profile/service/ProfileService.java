@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -16,6 +18,9 @@ import java.util.List;
 public class ProfileService {
     private final ProfileRepository profileRepository;
 
+    public Optional<Profile> getProfileByUserUUID(UUID userUUID) {
+        return profileRepository.findByUserUserUUID(userUUID);
+    }
     public List<Profile> getActivePlogging(){
         return profileRepository.findByPloggingStatus(true);
     }

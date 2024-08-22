@@ -35,7 +35,9 @@ public class Profile {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
     public void setPloggingStatus(boolean b) {
         this.ploggingStatus = b;
     }
+
 }
