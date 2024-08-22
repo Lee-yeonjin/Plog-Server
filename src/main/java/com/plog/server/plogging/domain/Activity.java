@@ -1,5 +1,6 @@
 package com.plog.server.plogging.domain;
 
+import com.plog.server.profile.domain.Profile;
 import com.plog.server.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,8 +26,8 @@ public class Activity {
     private Long activityId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
-    private User user;
+    @JoinColumn(name = "profile_id", nullable = false)
+    private Profile profile;
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Location> locations;

@@ -19,9 +19,4 @@ public class LocationService {
 
     private final LocationRepository locationRepository;
 
-    @Transactional
-    public List<Location> getUserLocations(UUID uuid) {
-        return locationRepository.findByUserUserUUID(uuid);
-    }
-
 }

@@ -6,14 +6,13 @@ import com.plog.server.plogging.dto.ActivityRequest;
 import com.plog.server.plogging.dto.ActivityResponse;
 import com.plog.server.plogging.repository.ActivityRepository;
 import com.plog.server.plogging.repository.LocationRepository;
-import com.plog.server.user.domain.User;
-import com.plog.server.user.repository.UserRepository;
+import com.plog.server.profile.domain.Profile;
+import com.plog.server.profile.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,36 +22,35 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ActivityService {
     private final ActivityRepository activityRepository;
-    private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final GeocodeService geocodeService;
+    private final ProfileRepository profileRepository;
 
     @Transactional
-    public User startActivity(UUID uuid) {
-        // 사용자 조회
-        User user = userRepository.findByUserUUID(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
-        ;
+    public Profile startActivity(UUID uuid) {
+
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다" + uuid));
 
         // 사용자 플로깅 상태 업데이트
-        user.setUserPloggingStatus(true);
-        userRepository.save(user);
+        profile.setPloggingStatus(true);
+        profileRepository.save(profile);
 
-        return user;
+        return profile;
     }
 
     @Transactional
     public ActivityResponse endActivity(UUID uuid, ActivityRequest activityRequest) {
-        // 사용자 조회
-        User user = userRepository.findByUserUUID(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
+
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다" + uuid));
 
         // 사용자 플로깅 상태 업데이트
-        user.setUserPloggingStatus(false);
-        userRepository.save(user);
+        profile.setPloggingStatus(false);
+        profileRepository.save(profile);
 
         // 사용자와 연관된 아직 Activity와 연결되지 않은 Location 조회
-        List<Location> locations = locationRepository.findByUserUserUUIDAndActivityIsNull(uuid);
+        List<Location> locations = locationRepository.findByProfileAndActivityIsNull(profile);
 
         // 주소 정보 설정
         String startPlace = geocodeService.getAddress(activityRequest.getLatitude1(), activityRequest.getLongitude1());
@@ -60,7 +58,7 @@ public class ActivityService {
 
         // 새로운 활동 생성
         Activity activity = Activity.builder()
-                .user(user)
+                .profile(profile)
                 .ploggingTime(activityRequest.getAcitvityTime())
                 .distance(activityRequest.getDistance())
                 .locations(locations) // 위치 정보 저장
@@ -80,14 +78,15 @@ public class ActivityService {
         return new ActivityResponse(activity);
     }
 
-    public List<ActivityResponse> getActivitiesByUserUUID(UUID userUUID) {
-        // 사용자 조회
-        User user = userRepository.findByUserUUID(userUUID)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + userUUID));
-        ;
+    //사용자 활동 조회
+    public List<ActivityResponse> getActivitiesByUserUUID(UUID uuid) {
+
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다" + uuid));
+
 
         // 사용자의 모든 액티비티 조회
-        List<Activity> activities = activityRepository.findByUser(user);
+        List<Activity> activities = activityRepository.findByProfile(profile);
 
         // ActivityResponse로 변환하여 반환
         return activities.stream()
@@ -95,26 +94,26 @@ public class ActivityService {
                 .collect(Collectors.toList());
     }
 
-    public ActivityResponse getActivityByUserUUIDAndId(UUID userUUID, Long activityId) {
+    //활동 상세 조회
+    public ActivityResponse getActivityByUserUUIDAndId(UUID uuid, Long activityId) {
         // 사용자 조회
-        User user = userRepository.findByUserUUID(userUUID)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + userUUID));
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다" + uuid));
 
         // 특정 활동 조회
-        Activity activity = activityRepository.findByUserAndActivityId(user, activityId)
+        Activity activity = activityRepository.findByProfileAndActivityId(profile, activityId)
                 .orElseThrow(() -> new IllegalArgumentException("Activity not found with ID: " + activityId));
 
         // ActivityResponse로 변환하여 반환
         return new ActivityResponse(activity);
     }
 
+    //루트 등록
     public Boolean setRouteStatus(UUID uuid,  Long activityId) {
-        // 사용자 조회
-        User user = userRepository.findByUserUUID(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
 
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Activity not found with ID: " + activityId));
+        // Profile과 Activity를 조인하여 해당 조건에 맞는 Activity를 찾기
+        Activity activity = activityRepository.findByActivityIdAndProfileUserUserUUID(activityId, uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Activity not found for given UUID and activityId: " + uuid + ", " + activityId));
 
         // routeStatus를 true로 설정
         activity.setRouteStatus();
@@ -125,6 +124,7 @@ public class ActivityService {
         return true;
     }
 
+    //등록된 루트 목록 조회
     // routeStatus가 true인 모든 액티비티 조회
     public List<ActivityResponse> getAllRoute() {
         List<Activity> activeActivities = activityRepository.findByRouteStatus(true);
@@ -133,12 +133,14 @@ public class ActivityService {
                 .collect(Collectors.toList());
     }
 
+    //사용자가 등록한 루트 목룍 조회
     // 특정 사용자의 routeStatus가 true인 모든 액티비티 조회
     public List<ActivityResponse> getAllRouteByUser(UUID uuid) {
-        User user = userRepository.findByUserUUID(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
+        // 사용자 조회
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다" + uuid));
 
-        List<Activity> activeActivities = activityRepository.findByUserAndRouteStatus(user, true);
+        List<Activity> activeActivities = activityRepository.findByProfileAndRouteStatus(profile, true);
         return activeActivities.stream()
                 .map(ActivityResponse::new)
                 .collect(Collectors.toList());

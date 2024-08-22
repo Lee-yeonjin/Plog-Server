@@ -10,6 +10,5 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByUserId(Long userId);
     User findByUserAccount(String userAccount);
-    List<User> findByUserPloggingStatus(boolean userPloggingStatus);
     Optional<User> findByUserUUID(UUID useruuid);
 }

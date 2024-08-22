@@ -90,8 +90,4 @@ public class UserController {
         userService.signUpUser(userTemp);
         return ResponseEntity.ok(new ApiResponse("인증 성공"));
     }
-    @GetMapping("/active")
-    public List<User> getActiveUsers() {
-        return userService.getActiveUsers();
-    }
 }

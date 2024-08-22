@@ -33,12 +33,4 @@ public class User {
     @Column(unique = true)
     private String userEmail;
 
-    private boolean userMembership;
-
-    private boolean userPloggingStatus;
-
-    public void setUserPloggingStatus(boolean b) {
-        this.userPloggingStatus = b;
-    }
-
 }

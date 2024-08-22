@@ -1,5 +1,6 @@
 package com.plog.server.profile.domain;
 
+import com.plog.server.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,11 +18,24 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long profileId;
 
-    Double totaldistance;
+    String userNickname;
+
+    Double totalDistance;
 
     Integer totalTrash;
 
     Double totalTime;
 
     Integer totalCoin;
+
+    private boolean userMembership;
+
+    private boolean ploggingStatus;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    public void setPloggingStatus(boolean b) {
+        this.ploggingStatus = b;
+    }
 }

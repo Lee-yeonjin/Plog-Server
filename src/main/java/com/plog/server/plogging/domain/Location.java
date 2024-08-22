@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.plog.server.profile.domain.Profile;
 import com.plog.server.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,9 +32,9 @@ public class Location {
     private Activity activity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "profile_id", nullable = false)
     @JsonIgnore
-    private User user;
+    private Profile profile;
 
     private double latitude;
 

@@ -5,6 +5,8 @@ import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.dto.LocationMessage;
 import com.plog.server.plogging.repository.LocationRepository;
 import com.plog.server.plogging.service.LocationService;
+import com.plog.server.profile.domain.Profile;
+import com.plog.server.profile.repository.ProfileRepository;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ public class LocationController {
 
     private final LocationRepository locationRepository;
     private final LocationService locationService;
-    private final UserService userService;
+    private final ProfileRepository profileRepository;
 
     @MessageMapping("/location")
     @SendTo("/topic/locations")
@@ -36,11 +38,11 @@ public class LocationController {
 
         UUID uuid = message.getUuid();
 
-        User user = userService.getUserByUuid(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + uuid));
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다" + uuid));
 
         Location location = Location.builder()
-                .user(user)
+                .profile(profile)
                 .latitude(message.getLatitude())
                 .longitude(message.getLongitude())
                 .build();
@@ -50,11 +52,6 @@ public class LocationController {
         log.info("실시간 위치 정보 받기: {}", message);
 
         return new ApiResponse("위치 받아오기",location);
-    }
-
-    @GetMapping("/locations/{uuid}")
-    public List<Location> getUserLocations(@PathVariable UUID uuid) {
-        return locationService.getUserLocations(uuid);
     }
 
 }
