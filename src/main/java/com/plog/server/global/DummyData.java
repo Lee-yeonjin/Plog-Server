@@ -2,6 +2,8 @@ package com.plog.server.global;
 
 import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.repository.LocationRepository;
+import com.plog.server.profile.domain.Profile;
+import com.plog.server.profile.repository.ProfileRepository;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
@@ -19,7 +21,7 @@ import java.util.UUID;
 public class DummyData {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
-
+    private final ProfileRepository profileRepository;
     @PostConstruct
     public void init (){
         User user = User.builder()
@@ -30,10 +32,16 @@ public class DummyData {
                 .build();
         userRepository.save(user);
 
+        Profile profile = Profile.builder()
+                .userNickname("메롱")
+                .user(user)
+                .build();
+        profileRepository.save(profile);
+
         log.info("주입성공");
 
         Location location = Location.builder()
-                .user(user)
+                .profile(profile)
                 .longitude(123)
                 .latitude(123)
                 .build();
@@ -41,7 +49,7 @@ public class DummyData {
         locationRepository.save(location);
 
         Location location2 = Location.builder()
-                .user(user)
+                .profile(profile)
                 .longitude(124)
                 .latitude(124)
                 .build();
@@ -49,7 +57,7 @@ public class DummyData {
         locationRepository.save(location2);
 
         Location location3 = Location.builder()
-                .user(user)
+                .profile(profile)
                 .longitude(125)
                 .latitude(125)
                 .build();

@@ -1,20 +1,18 @@
 package com.plog.server.user.service;
 
 import com.plog.server.profile.domain.Profile;
+import com.plog.server.profile.repository.ProfileRepository;
 import com.plog.server.profile.service.ProfileService;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.domain.UserTemp;
 import com.plog.server.user.dto.SignUpRequest;
-import com.plog.server.user.dto.UserResponseDto;
 import com.plog.server.user.repository.UserRepository;
 import com.plog.server.user.repository.UserTempRepository;
-import com.plog.server.user.dto.LoginRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,6 +24,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserTempRepository userTempRepository;
     private final ProfileService profileService;
+    private final ProfileRepository profileRepository;
 
     // UUID 조회 추가
     public Optional<User> getUserByUUID(UUID useruuid) {
@@ -100,16 +99,20 @@ public class UserService {
                 .build();
         userRepository.save(user);
 
+        Profile profile = Profile.builder()
+                .userNickname(userTemp.getTempNickname())
+                .totalCoin(0)
+                .totalDistance(0.0)
+                .totalTime(0.0)
+                .totalTrash(0)
+                .build();
+        profileRepository.save(profile);
+
         userTempRepository.delete(userTemp);
         userTempRepository.flush();
         log.info("임시 회원 삭제 완료: {}", user.getUserAccount());
 
         return true;
-    }
-
-    //플로깅 중이 유저 조회
-    public List<User> getActiveUsers() {
-        return userRepository.findByUserPloggingStatus(true);
     }
 }
 

@@ -18,22 +18,26 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long profileId;
 
+    String userNickname;
+
+    Double totalDistance;
+
     Integer totalTrash;
 
     Double totalTime;
 
     Integer totalCoin;
 
-    String userNickname;
-
-    Double totalDistance;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    private User user;
-
     private boolean userMembership;
 
-    private boolean userPloggingStatus;
+    private boolean ploggingStatus;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    public void setPloggingStatus(boolean b) {
+        this.ploggingStatus = b;
+    }
 
 }
