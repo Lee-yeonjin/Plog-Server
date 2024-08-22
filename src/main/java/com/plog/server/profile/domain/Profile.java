@@ -17,7 +17,9 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long profileId;
 
-    Double totaldistance;
+    String userNickname;
+
+    Double totalDistance;
 
     Integer totalTrash;
 
