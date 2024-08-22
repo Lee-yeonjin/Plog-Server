@@ -1,5 +1,9 @@
 package com.plog.server.global;
 
+import com.plog.server.badge.domain.Badge;
+import com.plog.server.badge.domain.MyBadge;
+import com.plog.server.badge.repository.BadgeRepository;
+import com.plog.server.badge.repository.MyBadgeRepository;
 import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.repository.LocationRepository;
 import com.plog.server.profile.domain.Profile;
@@ -22,6 +26,8 @@ public class DummyData {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final ProfileRepository profileRepository;
+    private final BadgeRepository badgeRepository;
+    private final MyBadgeRepository myBadgeRepository;
     @PostConstruct
     public void init (){
         User user = User.builder()
@@ -38,6 +44,18 @@ public class DummyData {
                 .user(user)
                 .build();
         profileRepository.save(profile);
+
+        Badge badge = Badge.builder()
+                .badgeGoal("기본 배지")
+                .cost(0)
+                .build();
+        badgeRepository.save(badge);
+
+        MyBadge myBadge = MyBadge.builder()
+                .badge(badge)
+                .profile(profile)
+                .build();
+        myBadgeRepository.save(myBadge);
 
         log.info("주입성공");
 
