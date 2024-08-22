@@ -1,5 +1,7 @@
 package com.plog.server.user.service;
 
+import com.plog.server.profile.domain.Profile;
+import com.plog.server.profile.service.ProfileService;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.domain.UserTemp;
 import com.plog.server.user.dto.SignUpRequest;
@@ -23,27 +25,33 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserTempRepository userTempRepository;
+    private final ProfileService profileService;
 
-    //UUID 조회 추가
+    // UUID 조회 추가
     public Optional<User> getUserByUUID(UUID useruuid) {
         return userRepository.findByUserUUID(useruuid);
     }
 
-    // 로그인
-    public UserResponseDto login(LoginRequestDto loginRequestDto) {
-        String userAccount = loginRequestDto.getUserAccount();
-        String userPw = loginRequestDto.getUserPw();
-
-        User user = userRepository.findByUserAccount(userAccount);
-        if (user == null || !user.getUserPw().equals(userPw)) {
-            throw new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다.");
-        }
-
-        log.info("로그인 성공 : {}", userAccount);
-
-        return new UserResponseDto(user.getUserUUID(), user.getUserNickname());
-
+    // 이거 추가
+    public Optional<Profile> getProfileByUserUUID(UUID userUUID) {
+        return profileService.getProfileByUserUUID(userUUID);
     }
+
+    // 로그인
+//    public UserResponseDto login(LoginRequestDto loginRequestDto) {
+//        String userAccount = loginRequestDto.getUserAccount();
+//        String userPw = loginRequestDto.getUserPw();
+//
+//        User user = userRepository.findByUserAccount(userAccount);
+//        if (user == null || !user.getUserPw().equals(userPw)) {
+//            throw new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다.");
+//        }
+//
+//        log.info("로그인 성공 : {}", userAccount);
+//
+//        return new UserResponseDto(user.getUserUUID(), user.getUserNickname());
+//
+//    }
 
     //임시 회원 가입
     public UserTemp signUpUserTemp(SignUpRequest request){
@@ -89,7 +97,6 @@ public class UserService {
                 .userAccount(userTemp.getTempAccount())
                 .userPw(userTemp.getTempPw())
                 .userEmail(userTemp.getTempEmail())
-                .userNickname(userTemp.getTempNickname())
                 .build();
         userRepository.save(user);
 

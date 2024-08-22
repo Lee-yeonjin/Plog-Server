@@ -1,6 +1,6 @@
 package com.plog.server.post.domain;
 
-import com.plog.server.user.domain.User;
+import com.plog.server.profile.domain.Profile;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,15 +10,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "Participation_Table")
+@Table(name = "Join_Table")
 public class Join {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long joinId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

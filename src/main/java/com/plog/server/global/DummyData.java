@@ -26,7 +26,6 @@ public class DummyData {
                 .userAccount("user")
                 .userPw("1234")
                 .userEmail("email")
-                .userNickname("플로거")
                 .userUUID(UUID.randomUUID())
                 .build();
         userRepository.save(user);
