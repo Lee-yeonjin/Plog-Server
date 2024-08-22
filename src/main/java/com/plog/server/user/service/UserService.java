@@ -110,11 +110,6 @@ public class UserService {
 
         return true;
     }
-
-    //플로깅 중이 유저 조회
-    public List<User> getActiveUsers() {
-        return userRepository.findByUserPloggingStatus(true);
-    }
 }
 
 

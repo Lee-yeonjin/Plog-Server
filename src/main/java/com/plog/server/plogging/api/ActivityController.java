@@ -5,6 +5,7 @@ import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.dto.ActivityRequest;
 import com.plog.server.plogging.dto.ActivityResponse;
 import com.plog.server.plogging.service.ActivityService;
+import com.plog.server.profile.domain.Profile;
 import com.plog.server.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +25,8 @@ public class ActivityController {
 
     @PostMapping("/start/{uuid}")
     public ResponseEntity<ApiResponse> startActivity(@PathVariable UUID uuid) {
-        User user = activityService.startActivity(uuid);
-        ApiResponse response = new ApiResponse("플로깅 시작", user);
+        Profile profile = activityService.startActivity(uuid);
+        ApiResponse response = new ApiResponse("플로깅 시작", profile);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
