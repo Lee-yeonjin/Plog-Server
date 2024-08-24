@@ -4,6 +4,7 @@ import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.dto.ActivityRequest;
 import com.plog.server.plogging.dto.ActivityResponse;
+import com.plog.server.plogging.dto.RouteDetailResponse;
 import com.plog.server.plogging.repository.ActivityRepository;
 import com.plog.server.plogging.repository.LocationRepository;
 import com.plog.server.profile.domain.Profile;
@@ -94,8 +95,8 @@ public class ActivityService {
                 .collect(Collectors.toList());
     }
 
-    //활동 상세 조회
-    public ActivityResponse getActivityByUserUUIDAndId(UUID uuid, Long activityId) {
+    //루트 상세 조회 (위도, 경도 반환)
+    public RouteDetailResponse getRouteDetailByUserUUID(UUID uuid, Long activityId) {
         // 사용자 조회
         Profile profile = profileRepository.findByUserUserUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다" + uuid));
@@ -104,8 +105,10 @@ public class ActivityService {
         Activity activity = activityRepository.findByProfileAndActivityId(profile, activityId)
                 .orElseThrow(() -> new IllegalArgumentException("Activity not found with ID: " + activityId));
 
+        List<Location> locations = activity.getLocations();
+
         // ActivityResponse로 변환하여 반환
-        return new ActivityResponse(activity);
+        return new RouteDetailResponse(locations);
     }
 
     //루트 등록

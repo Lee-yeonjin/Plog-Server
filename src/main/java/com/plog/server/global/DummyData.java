@@ -49,6 +49,10 @@ public class DummyData {
                 .userNickname("메롱")
                 .user(user)
                 .badge(badge)
+                .totalTrash(0)
+                .totalTime(0.0)
+                .totalCoin(0)
+                .totalDistance(0.0)
                 .build();
         profileRepository.save(profile);
 
