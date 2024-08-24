@@ -1,15 +1,10 @@
 package com.plog.server.user.api;
 
 import com.plog.server.global.ApiResponse;
-import com.plog.server.user.domain.EmailToken;
+import com.plog.server.profile.service.ProfileService;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.domain.UserTemp;
-import com.plog.server.user.dto.LoginRequestDto;
-import com.plog.server.user.dto.SignUpFinishRequest;
-import com.plog.server.user.dto.SignUpRequest;
-import com.plog.server.user.dto.UserResponseDto;
-import com.plog.server.user.repository.EmailTokenRepository;
-import com.plog.server.user.repository.UserTempRepository;
+import com.plog.server.user.dto.*;
 import com.plog.server.user.service.EmailService;
 import com.plog.server.user.service.UserService;
 import jakarta.mail.MessagingException;
@@ -29,25 +24,20 @@ import java.util.*;
 public class UserController {
     private final UserService userService;
     private final EmailService emailService;
+    private final ProfileService profileService;
 
-//    @PostMapping("/signin")
-//    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDto loginRequest, HttpSession session) {
-//        try {
-//            UserResponseDto userResponseDto = userService.login(loginRequest);
-//
-//            session.setAttribute("user", userResponseDto);
-//
-//            ApiResponse apiResponse = new ApiResponse(userResponseDto.getUserUUID().toString(), userResponseDto.getUserNickname());
-//
-//            Map<String, Object> responseData = new HashMap<>();
-//            responseData.put("userUUID", userResponseDto.getUserUUID().toString());
-//            responseData.put("userNickname", userResponseDto.getUserNickname());
-//
-//            return ResponseEntity.ok(new ApiResponse("로그인 성공", responseData));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body(new ApiResponse("서버 오류: " + e.getMessage()));
-//        }
-//    }
+    @PostMapping("/signin")
+    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
+        try {
+            LoginResponse loginResponse = userService.login(loginRequest);
+            session.setAttribute("user", loginResponse);
+
+            return ResponseEntity.ok(new ApiResponse("로그인 성공", loginResponse));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("서버 오류: " + e.getMessage()));
+        }
+    }
 
     @PostMapping("/signout")
     public ResponseEntity<ApiResponse> logout(HttpSession session) {

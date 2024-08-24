@@ -5,6 +5,8 @@ import com.plog.server.profile.repository.ProfileRepository;
 import com.plog.server.profile.service.ProfileService;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.domain.UserTemp;
+import com.plog.server.user.dto.LoginRequest;
+import com.plog.server.user.dto.LoginResponse;
 import com.plog.server.user.dto.SignUpRequest;
 import com.plog.server.user.repository.UserRepository;
 import com.plog.server.user.repository.UserTempRepository;
@@ -31,26 +33,30 @@ public class UserService {
         return userRepository.findByUserUUID(useruuid);
     }
 
-    // 이거 추가
-    public Optional<Profile> getProfileByUserUUID(UUID userUUID) {
-        return profileService.getProfileByUserUUID(userUUID);
-    }
-
     // 로그인
-//    public UserResponseDto login(LoginRequestDto loginRequestDto) {
-//        String userAccount = loginRequestDto.getUserAccount();
-//        String userPw = loginRequestDto.getUserPw();
-//
-//        User user = userRepository.findByUserAccount(userAccount);
-//        if (user == null || !user.getUserPw().equals(userPw)) {
-//            throw new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다.");
-//        }
-//
-//        log.info("로그인 성공 : {}", userAccount);
-//
-//        return new UserResponseDto(user.getUserUUID(), user.getUserNickname());
-//
-//    }
+    public LoginResponse login(LoginRequest loginRequest) {
+        String userAccount = loginRequest.getUserAccount();
+        String userPw = loginRequest.getUserPw();
+
+        User user = userRepository.findByUserAccount(userAccount);
+        if (user == null || !user.getUserPw().equals(userPw)) {
+            throw new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다.");
+        }
+
+        log.info("로그인 성공 : {}", userAccount);
+
+        Optional<Profile> profileOptional = profileService.getProfileByUserUUID(user.getUserUUID());
+        String userNickname;
+
+        if (profileOptional.isPresent()) {
+            userNickname = profileOptional.get().getUserNickname();
+        } else {
+            throw new IllegalArgumentException("프로필을 찾을 수 없습니다.");
+        }
+
+        return new LoginResponse(user.getUserUUID(), userNickname);
+
+    }
 
     //임시 회원 가입
     public UserTemp signUpUserTemp(SignUpRequest request){
