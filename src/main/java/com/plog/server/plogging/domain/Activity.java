@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -41,6 +42,8 @@ public class Activity {
     private String startPlace;
 
     private String endPlace;
+
+    private LocalDate ploggingDate;
 
     public void setRouteStatus(){
         this.routeStatus = Boolean.TRUE;

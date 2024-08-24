@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,6 +67,7 @@ public class ActivityService {
                 .locations(locations) // 위치 정보 저장
                 .startPlace(startPlace)
                 .endPlace(endPlace)
+                .ploggingDate(LocalDate.now())
                 .build();
 
         // 액티비티 저장
