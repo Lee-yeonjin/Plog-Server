@@ -1,6 +1,7 @@
 package com.plog.server.plogging.repository;
 
 import com.plog.server.plogging.domain.Activity;
+import com.plog.server.plogging.domain.Location;
 import com.plog.server.profile.domain.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
