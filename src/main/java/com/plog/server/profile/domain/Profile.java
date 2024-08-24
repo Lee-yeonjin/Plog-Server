@@ -53,4 +53,8 @@ public class Profile {
     public void setPloggingStatus(boolean b) {
         this.ploggingStatus = b;
     }
+
+    public void setIncreaseCoins(Integer coin) {
+            this.totalCoin += coin;
+    }
 }

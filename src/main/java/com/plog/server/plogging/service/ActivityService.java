@@ -111,9 +111,8 @@ public class ActivityService {
         return new RouteDetailResponse(locations);
     }
 
-    //루트 등록
+    //루트 등록 및 사용자 코인 증가
     public Boolean setRouteStatus(UUID uuid,  Long activityId) {
-
         // Profile과 Activity를 조인하여 해당 조건에 맞는 Activity를 찾기
         Activity activity = activityRepository.findByActivityIdAndProfileUserUserUUID(activityId, uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Activity not found for given UUID and activityId: " + uuid + ", " + activityId));
@@ -123,6 +122,11 @@ public class ActivityService {
 
         // 변경된 액티비티 저장
         activityRepository.save(activity);
+
+        Profile profile = activity.getProfile();
+        profile.setIncreaseCoins(5);
+
+        profileRepository.save(profile);
 
         return true;
     }
