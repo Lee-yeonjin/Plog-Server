@@ -6,6 +6,8 @@ import com.plog.server.plogging.dto.ActivityRequest;
 import com.plog.server.plogging.dto.ActivityResponse;
 import com.plog.server.plogging.service.ActivityService;
 import com.plog.server.profile.domain.Profile;
+import com.plog.server.profile.dto.ActiveProfileResponse;
+import com.plog.server.profile.service.ProfileService;
 import com.plog.server.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import java.util.UUID;
 @Slf4j
 public class ActivityController {
     private final ActivityService activityService;
+    private final ProfileService profileService;
 
     @PostMapping("/start/{uuid}")
     public ResponseEntity<ApiResponse> startActivity(@PathVariable UUID uuid) {
@@ -79,6 +82,13 @@ public class ActivityController {
     public ApiResponse<List<ActivityResponse>> getActiveActivitiesByUser(@PathVariable UUID uuid) {
         List<ActivityResponse> activities = activityService.getAllRouteByUser(uuid);
         return new ApiResponse<>("사용자의 루트 조회 성공", activities);
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<ApiResponse<List<ActiveProfileResponse>>> getActivePloggingDetails() {
+        List<ActiveProfileResponse> activeProfiles = profileService.getActivePloggingDetails();
+        ApiResponse<List<ActiveProfileResponse>> response = new ApiResponse<>("현재 플로깅중인 사용자 조회 성공", activeProfiles);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

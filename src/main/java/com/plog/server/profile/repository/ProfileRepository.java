@@ -9,6 +9,5 @@ import java.util.UUID;
 
 public interface ProfileRepository extends JpaRepository<Profile,Long> {
     Optional<Profile> findByUserUserUUID(UUID userUUID);
-
     List<Profile> findByPloggingStatus(boolean PloggingStatus);
 }

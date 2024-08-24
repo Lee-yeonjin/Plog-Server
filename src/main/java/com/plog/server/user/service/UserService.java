@@ -1,5 +1,7 @@
 package com.plog.server.user.service;
 
+import com.plog.server.badge.domain.Badge;
+import com.plog.server.badge.repository.BadgeRepository;
 import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.repository.ProfileRepository;
 import com.plog.server.user.domain.User;
@@ -26,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserTempRepository userTempRepository;
     private final ProfileRepository profileRepository;
+    private final BadgeRepository badgeRepository;
 
     //UUID 조회 추가
     public Optional<User> getUserByUUID(UUID useruuid) {
@@ -95,12 +98,16 @@ public class UserService {
                 .build();
         userRepository.save(user);
 
+        Badge defaultBadge = badgeRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("Default badge not found"));
+
         Profile profile = Profile.builder()
                 .userNickname(userTemp.getTempNickname())
                 .totalCoin(0)
                 .totalDistance(0.0)
                 .totalTime(0.0)
                 .totalTrash(0)
+                .badge(defaultBadge)
                 .build();
         profileRepository.save(profile);
 

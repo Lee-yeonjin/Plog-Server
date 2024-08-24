@@ -39,17 +39,18 @@ public class DummyData {
                 .build();
         userRepository.save(user);
 
-        Profile profile = Profile.builder()
-                .userNickname("메롱")
-                .user(user)
-                .build();
-        profileRepository.save(profile);
-
         Badge badge = Badge.builder()
                 .badgeGoal("기본 배지")
                 .cost(0)
                 .build();
         badgeRepository.save(badge);
+
+        Profile profile = Profile.builder()
+                .userNickname("메롱")
+                .user(user)
+                .badge(badge)
+                .build();
+        profileRepository.save(profile);
 
         MyBadge myBadge = MyBadge.builder()
                 .badge(badge)
