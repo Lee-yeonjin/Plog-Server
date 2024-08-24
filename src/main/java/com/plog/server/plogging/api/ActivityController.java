@@ -5,6 +5,7 @@ import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.dto.ActivityRequest;
 import com.plog.server.plogging.dto.ActivityResponse;
 import com.plog.server.plogging.dto.RouteDetailResponse;
+import com.plog.server.plogging.dto.RouteResponse;
 import com.plog.server.plogging.service.ActivityService;
 import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.dto.ActiveProfileResponse;
@@ -95,4 +96,11 @@ public class ActivityController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    // 플로깅 시작 전 루트 선택
+    @GetMapping("/{uuid}/{activityId}/select-route")
+    public ApiResponse<RouteResponse> selectRoute(@PathVariable UUID uuid,
+                                     @PathVariable Long activityId) {
+        RouteResponse response = activityService.seleteRoute(uuid,activityId);
+        return new ApiResponse<>("플로깅 루트 선택 완료", response);
+    }
 }

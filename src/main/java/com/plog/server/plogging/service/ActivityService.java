@@ -5,6 +5,7 @@ import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.dto.ActivityRequest;
 import com.plog.server.plogging.dto.ActivityResponse;
 import com.plog.server.plogging.dto.RouteDetailResponse;
+import com.plog.server.plogging.dto.RouteResponse;
 import com.plog.server.plogging.repository.ActivityRepository;
 import com.plog.server.plogging.repository.LocationRepository;
 import com.plog.server.profile.domain.Profile;
@@ -110,7 +111,6 @@ public class ActivityService {
 
         List<Location> locations = activity.getLocations();
 
-        // ActivityResponse로 변환하여 반환
         return new RouteDetailResponse(locations);
     }
 
@@ -154,6 +154,19 @@ public class ActivityService {
         return activeActivities.stream()
                 .map(ActivityResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    //플로깅 시작 전 루트 선택
+    public RouteResponse seleteRoute(UUID uuid, Long activityId){
+        // Profile과 ActivityId의 해당 조건에 맞는 Activity를 찾기
+        Activity activity = activityRepository.findByActivityIdAndProfileUserUserUUID(activityId, uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Activity not found for given UUID and activityId: " + uuid + ", " + activityId));
+        // 위치 목록과 시작 장소 가져오기
+        List<Location> locations = activity.getLocations();
+        String startPlace = activity.getStartPlace();
+
+        // RouteResponse 객체 생성 및 반환
+        return new RouteResponse(locations, startPlace);
     }
 
 }
