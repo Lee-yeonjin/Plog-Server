@@ -4,6 +4,7 @@ import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.dto.ActivityRequest;
 import com.plog.server.plogging.dto.ActivityResponse;
+import com.plog.server.plogging.dto.RouteDetailResponse;
 import com.plog.server.plogging.repository.ActivityRepository;
 import com.plog.server.plogging.repository.LocationRepository;
 import com.plog.server.profile.domain.Profile;
@@ -94,8 +95,8 @@ public class ActivityService {
                 .collect(Collectors.toList());
     }
 
-    //활동 상세 조회
-    public ActivityResponse getActivityByUserUUIDAndId(UUID uuid, Long activityId) {
+    //루트 상세 조회 (위도, 경도 반환)
+    public RouteDetailResponse getRouteDetailByUserUUID(UUID uuid, Long activityId) {
         // 사용자 조회
         Profile profile = profileRepository.findByUserUserUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다" + uuid));
@@ -104,13 +105,14 @@ public class ActivityService {
         Activity activity = activityRepository.findByProfileAndActivityId(profile, activityId)
                 .orElseThrow(() -> new IllegalArgumentException("Activity not found with ID: " + activityId));
 
+        List<Location> locations = activity.getLocations();
+
         // ActivityResponse로 변환하여 반환
-        return new ActivityResponse(activity);
+        return new RouteDetailResponse(locations);
     }
 
-    //루트 등록
+    //루트 등록 및 사용자 코인 증가
     public Boolean setRouteStatus(UUID uuid,  Long activityId) {
-
         // Profile과 Activity를 조인하여 해당 조건에 맞는 Activity를 찾기
         Activity activity = activityRepository.findByActivityIdAndProfileUserUserUUID(activityId, uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Activity not found for given UUID and activityId: " + uuid + ", " + activityId));
@@ -120,6 +122,11 @@ public class ActivityService {
 
         // 변경된 액티비티 저장
         activityRepository.save(activity);
+
+        Profile profile = activity.getProfile();
+        profile.setIncreaseCoins(5);
+
+        profileRepository.save(profile);
 
         return true;
     }

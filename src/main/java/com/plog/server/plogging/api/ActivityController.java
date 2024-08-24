@@ -4,8 +4,11 @@ import com.plog.server.global.ApiResponse;
 import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.dto.ActivityRequest;
 import com.plog.server.plogging.dto.ActivityResponse;
+import com.plog.server.plogging.dto.RouteDetailResponse;
 import com.plog.server.plogging.service.ActivityService;
 import com.plog.server.profile.domain.Profile;
+import com.plog.server.profile.dto.ActiveProfileResponse;
+import com.plog.server.profile.service.ProfileService;
 import com.plog.server.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +25,9 @@ import java.util.UUID;
 @Slf4j
 public class ActivityController {
     private final ActivityService activityService;
+    private final ProfileService profileService;
 
+    //플로깅 시작
     @PostMapping("/start/{uuid}")
     public ResponseEntity<ApiResponse> startActivity(@PathVariable UUID uuid) {
         Profile profile = activityService.startActivity(uuid);
@@ -31,6 +36,7 @@ public class ActivityController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    //플로깅 종료
     @PostMapping("/end/{uuid}")
     public ApiResponse<ActivityResponse> endActivity(@PathVariable UUID uuid, @RequestBody ActivityRequest activityRequest) {
         ActivityResponse activityResponse = activityService.endActivity(uuid, activityRequest);
@@ -44,13 +50,13 @@ public class ActivityController {
         return new ApiResponse<>("Activities fetched successfully", activities);
     }
 
-    //루트 선택
+    //루트 선택시 상세 조회
     @GetMapping("/{uuid}/{activityId}")
-    public ApiResponse<ActivityResponse> getActivityByUserUUIDAndId(
+    public ApiResponse<RouteDetailResponse> getRouteDetailByUserUUID(
             @PathVariable UUID uuid,
             @PathVariable Long activityId) {
 
-        ActivityResponse activity = activityService.getActivityByUserUUIDAndId(uuid, activityId);
+        RouteDetailResponse activity = activityService.getRouteDetailByUserUUID(uuid, activityId);
         return new ApiResponse<>("루트 조회 성공", activity);
     }
 
@@ -79,6 +85,14 @@ public class ActivityController {
     public ApiResponse<List<ActivityResponse>> getActiveActivitiesByUser(@PathVariable UUID uuid) {
         List<ActivityResponse> activities = activityService.getAllRouteByUser(uuid);
         return new ApiResponse<>("사용자의 루트 조회 성공", activities);
+    }
+
+    //플로깅 중 현재 플로깅중인 사용자 조회
+    @GetMapping("/active")
+    public ResponseEntity<ApiResponse<List<ActiveProfileResponse>>> getActivePloggingDetails() {
+        List<ActiveProfileResponse> activeProfiles = profileService.getActivePloggingDetails();
+        ApiResponse<List<ActiveProfileResponse>> response = new ApiResponse<>("현재 플로깅중인 사용자 조회 성공", activeProfiles);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }
