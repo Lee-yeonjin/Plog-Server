@@ -28,6 +28,7 @@ public class DummyData {
     private final ProfileRepository profileRepository;
     private final BadgeRepository badgeRepository;
     private final MyBadgeRepository myBadgeRepository;
+
     @PostConstruct
     public void init (){
         User user = User.builder()
