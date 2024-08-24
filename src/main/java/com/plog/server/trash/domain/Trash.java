@@ -1,5 +1,6 @@
 package com.plog.server.trash.domain;
 
+import com.plog.server.plogging.domain.Activity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,11 +32,13 @@ public class Trash {
 
     private int trash_sum; // 전체 쓰레기 개수
 
-    private LocalDate date;
+
+    @OneToOne // 일대일 관계로 수정
+    @JoinColumn(name = "activity_id", nullable = false) // 외래 키 설정
+    private Activity activity;
 
     @PrePersist
     public void prePersist() {
-        this.date = LocalDate.now();
         this.trash_sum = calculateTrashSum();
     }
 

@@ -1,8 +1,13 @@
 package com.plog.server.trash.api;
 
 import com.plog.server.global.ApiResponse;
+import com.plog.server.plogging.domain.Activity;
+import com.plog.server.plogging.repository.ActivityRepository;
+import com.plog.server.profile.domain.Profile;
+import com.plog.server.profile.repository.ProfileRepository;
 import com.plog.server.trash.domain.Trash;
-import com.plog.server.trash.dto.TrashDto;
+import com.plog.server.trash.dto.TrashRequest;
+import com.plog.server.trash.dto.TrashResponse;
 import com.plog.server.trash.service.TrashService;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.service.UserService;
@@ -19,31 +24,33 @@ import java.util.UUID;
 public class TrashController {
     private final TrashService trashService;
     private final UserService userService;
+    private final ActivityRepository activityRepository;
+    private final ProfileRepository profileRepository;
 
-    @PostMapping("/{uuid}/record")
-    public ResponseEntity<ApiResponse> createTrash(@PathVariable UUID uuid, @RequestBody TrashDto trashDto) {
-        User user = userService.getUserByUUID(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    @PostMapping("/{uuid}/{activityid}/record")
+    public ResponseEntity<ApiResponse> createTrash(@PathVariable UUID uuid,  @PathVariable Long activityid, @RequestBody TrashRequest trashRequest) {
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
 
-        Trash trash = Trash.builder()
-                .garbage(trashDto.getGarbage())
-                .can(trashDto.getCan())
-                .plastic(trashDto.getPlastic())
-                .paper(trashDto.getPaper())
-                .plastic_bag(trashDto.getPlastic_bag())
-                .glass(trashDto.getGlass())
-                .build();
+        Activity activity = activityRepository.findById(activityid)
+                .orElseThrow(() -> new IllegalArgumentException("Activity not found"));
 
-        trashService.createTrash(trash);
+        Trash trash = trashService.createTrash(trashRequest, activity, profile);
+
         return ResponseEntity.ok(new ApiResponse(("플로깅 기록 저장 성공")));
     }
 
-    @GetMapping("/{uuid}/plogging-check")
-    public ResponseEntity<List<Trash>> getAllTrash(@PathVariable UUID uuid) {
-        User user = userService.getUserByUUID(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    // 플로깅 기록 확인 (활동에 대한 기록)
+    @GetMapping("/{uuid}/{activityid}/plogging-check")
+    public ResponseEntity<List<TrashResponse>> getAllTrash(@PathVariable UUID uuid,  @PathVariable Long activityid) {
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
 
-        List<Trash> trashList = trashService.getAllTrash();
-        return ResponseEntity.ok(trashList);
+        Activity activity = activityRepository.findById(activityid)
+                .orElseThrow(() -> new IllegalArgumentException("Activity not found"));
+
+        List<TrashResponse> trashResponse = trashService.getAllTrashResponses(activity);
+        return ResponseEntity.ok(trashResponse);
     }
+
 }
