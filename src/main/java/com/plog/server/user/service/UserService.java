@@ -4,19 +4,19 @@ import com.plog.server.badge.domain.Badge;
 import com.plog.server.badge.repository.BadgeRepository;
 import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.repository.ProfileRepository;
+import com.plog.server.profile.service.ProfileService;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.domain.UserTemp;
+import com.plog.server.user.dto.LoginRequest;
+import com.plog.server.user.dto.LoginResponse;
 import com.plog.server.user.dto.SignUpRequest;
-import com.plog.server.user.dto.UserResponseDto;
 import com.plog.server.user.repository.UserRepository;
 import com.plog.server.user.repository.UserTempRepository;
-import com.plog.server.user.dto.LoginRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,18 +27,19 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserTempRepository userTempRepository;
+    private final ProfileService profileService;
     private final ProfileRepository profileRepository;
     private final BadgeRepository badgeRepository;
 
-    //UUID 조회 추가
+    // UUID 조회 추가
     public Optional<User> getUserByUUID(UUID useruuid) {
         return userRepository.findByUserUUID(useruuid);
     }
 
     // 로그인
-    public UserResponseDto login(LoginRequestDto loginRequestDto) {
-        String userAccount = loginRequestDto.getUserAccount();
-        String userPw = loginRequestDto.getUserPw();
+    public LoginResponse login(LoginRequest loginRequest) {
+        String userAccount = loginRequest.getUserAccount();
+        String userPw = loginRequest.getUserPw();
 
         User user = userRepository.findByUserAccount(userAccount);
         if (user == null || !user.getUserPw().equals(userPw)) {
@@ -47,7 +48,16 @@ public class UserService {
 
         log.info("로그인 성공 : {}", userAccount);
 
-        return new UserResponseDto(user.getUserUUID(), user.getUserNickname());
+        Optional<Profile> profileOptional = profileService.getProfileByUserUUID(user.getUserUUID());
+        String userNickname;
+
+        if (profileOptional.isPresent()) {
+            userNickname = profileOptional.get().getUserNickname();
+        } else {
+            throw new IllegalArgumentException("프로필을 찾을 수 없습니다.");
+        }
+
+        return new LoginResponse(user.getUserUUID(), userNickname);
 
     }
 

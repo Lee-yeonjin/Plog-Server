@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class LoginRequestDto {
+public class LoginRequest {
     private String userAccount;
-    private String userUUID;
-    private String userNickname;
     private String userPw;
 }

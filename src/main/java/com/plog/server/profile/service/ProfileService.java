@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -24,5 +26,8 @@ public class ProfileService {
         return activeProfiles.stream()
                 .map(profile -> new ActiveProfileResponse(profile.getUserNickname(), profile.getBadge().getBadgeId()))
                 .collect(Collectors.toList());
+    }
+    public Optional<Profile> getProfileByUserUUID(UUID userUUID) {
+        return profileRepository.findByUserUserUUID(userUUID);
     }
 }

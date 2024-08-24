@@ -1,6 +1,6 @@
 package com.plog.server.post.domain;
 
-import com.plog.server.user.domain.User;
+import com.plog.server.profile.domain.Profile;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,18 +24,24 @@ public class Post {
 
     private int joinCount;
 
-    private String place;
+    private int likeCount;
+
+    private String plogPlace;
+
+    private String meetPlace;
 
     private LocalDate time;
 
     private String schedule;
 
     @ManyToOne
-    private User user;
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
     @PrePersist
     public void prePersist() {
         this.joinCount = 0; // 참여를 몇 명 눌렀는지
+        this.likeCount = 0;
         this.time = LocalDate.now();
     }
 }

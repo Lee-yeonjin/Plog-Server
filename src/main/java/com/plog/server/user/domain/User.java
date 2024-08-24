@@ -28,8 +28,6 @@ public class User {
     @Column(nullable = false)
     private String userPw;
 
-    private String userNickname;
-
     @Column(unique = true)
     private String userEmail;
 
