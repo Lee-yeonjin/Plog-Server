@@ -2,10 +2,7 @@ package com.plog.server.plogging.api;
 
 import com.plog.server.global.ApiResponse;
 import com.plog.server.plogging.domain.Activity;
-import com.plog.server.plogging.dto.ActivityRequest;
-import com.plog.server.plogging.dto.ActivityResponse;
-import com.plog.server.plogging.dto.RouteDetailResponse;
-import com.plog.server.plogging.dto.RouteResponse;
+import com.plog.server.plogging.dto.*;
 import com.plog.server.plogging.service.ActivityService;
 import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.dto.ActiveProfileResponse;
@@ -102,5 +99,19 @@ public class ActivityController {
                                      @PathVariable Long activityId) {
         RouteResponse response = activityService.seleteRoute(uuid,activityId);
         return new ApiResponse<>("플로깅 루트 선택 완료", response);
+    }
+
+    //플로깅 활동 목록 조회
+    @GetMapping("/{uuid}/ploggings")
+    public ApiResponse<List<PloggingResponse>>getPloggingList(@PathVariable UUID uuid){
+        List<PloggingResponse> ploggingResponse = activityService.getPloggingList(uuid);
+        return new ApiResponse<>("플로깅 목록 조회 성공",ploggingResponse);
+    }
+
+    @GetMapping("/{uuid}/{activityId}/plogging/details")
+    public ApiResponse<PloggingDetailsResponse>getPloggingDetails(@PathVariable UUID uuid,
+                                                                  @PathVariable Long activityId) {
+        PloggingDetailsResponse ploggingDetailsResponse = activityService.getPloggingListDetails(uuid,activityId);
+        return new ApiResponse<>("플로깅 목록 세부조회 성공",ploggingDetailsResponse);
     }
 }
