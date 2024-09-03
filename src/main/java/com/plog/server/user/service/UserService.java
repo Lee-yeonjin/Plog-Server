@@ -118,6 +118,7 @@ public class UserService {
                 .totalTime(0.0)
                 .totalTrash(0)
                 .badge(defaultBadge)
+                .user(user)
                 .build();
         profileRepository.save(profile);
 
