@@ -2,7 +2,9 @@ package com.plog.server.trash.api;
 
 import com.plog.server.global.ApiResponse;
 import com.plog.server.plogging.domain.Activity;
+import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.repository.ActivityRepository;
+import com.plog.server.plogging.service.LocationService;
 import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.repository.ProfileRepository;
 import com.plog.server.trash.domain.Trash;
@@ -23,12 +25,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TrashController {
     private final TrashService trashService;
-    private final UserService userService;
     private final ActivityRepository activityRepository;
     private final ProfileRepository profileRepository;
+    private final LocationService locationService;
 
     @PostMapping("/{uuid}/{activityid}/record")
-    public ResponseEntity<ApiResponse> createTrash(@PathVariable UUID uuid,  @PathVariable Long activityid, @RequestBody TrashRequest trashRequest) {
+    public ResponseEntity<List<Location>> createTrash(@PathVariable UUID uuid,  @PathVariable Long activityid, @RequestBody TrashRequest trashRequest) {
         Profile profile = profileRepository.findByUserUserUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
 
@@ -36,8 +38,9 @@ public class TrashController {
                 .orElseThrow(() -> new IllegalArgumentException("Activity not found"));
 
         Trash trash = trashService.createTrash(trashRequest, activity, profile);
+        List<Location> locations =locationService.getLocationsByActivityId(activityid);
 
-        return ResponseEntity.ok(new ApiResponse(("플로깅 기록 저장 성공")));
+        return ResponseEntity.ok(locations);
     }
 
     // 플로깅 기록 확인 (활동에 대한 기록)
