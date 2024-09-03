@@ -2,14 +2,13 @@ package com.plog.server.plogging.service;
 
 import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.domain.Location;
-import com.plog.server.plogging.dto.ActivityRequest;
-import com.plog.server.plogging.dto.ActivityResponse;
-import com.plog.server.plogging.dto.RouteDetailResponse;
-import com.plog.server.plogging.dto.RouteResponse;
+import com.plog.server.plogging.dto.*;
 import com.plog.server.plogging.repository.ActivityRepository;
 import com.plog.server.plogging.repository.LocationRepository;
 import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.repository.ProfileRepository;
+import com.plog.server.trash.domain.Trash;
+import com.plog.server.trash.repository.TrashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -167,4 +166,28 @@ public class ActivityService {
         return new RouteResponse(locations, startPlace);
     }
 
+    //플로깅활동 목록 조회
+    public List<PloggingResponse>getPloggingList(UUID uuid){
+        // 사용자 조회
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다" + uuid));
+
+        // 프로필과 연관된 플로깅 활동 목록 조회
+        List<Activity> activities = activityRepository.findByProfile(profile);
+
+        return activities.stream()
+                .map(PloggingResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    //플로깅 활동 목록 세부 조회
+    public PloggingDetailsResponse getPloggingListDetails(UUID uuid, Long activityId){
+        // Profile과 ActivityId의 해당 조건에 맞는 Activity를 찾기
+        Activity activity = activityRepository.findByActivityIdAndProfileUserUserUUID(activityId, uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Activity not found for given UUID and activityId: " + uuid + ", " + activityId));
+
+        Trash trash = activity.getTrash();
+
+        return new PloggingDetailsResponse(trash);
+    }
 }
