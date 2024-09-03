@@ -60,6 +60,8 @@ public class DummyData {
                 .totalTime(0.0)
                 .totalCoin(0)
                 .totalDistance(0.0)
+                .userMembership(false)
+                .ploggingStatus(false)
                 .build();
         profileRepository.save(profile);
 

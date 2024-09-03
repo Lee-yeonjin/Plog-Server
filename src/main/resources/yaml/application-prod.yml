@@ -6,7 +6,7 @@ logging:
   level:
     com:
       plog:
-        Server: info
+        Server: debug
 
 #email url
 email:
