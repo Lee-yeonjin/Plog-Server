@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.common.net.HttpHeaders;
 import com.plog.server.post.dto.FcmMessage;
+import com.plog.server.post.dto.FcmSend;
 import lombok.RequiredArgsConstructor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -26,8 +27,8 @@ public class FcmService {
     private final String API_URL = "https://fcm.googleapis.com/v1/projects/plog-97f27/messages:send";
     private final ObjectMapper objectMapper;
 
-    public void sendMessageTo(String targetToken, String title, String body) throws IOException {
-        String message = makeMessage(targetToken, title, body);
+    public void sendMessageTo(FcmSend fcmSend) throws IOException {
+        String message = makeMessage(fcmSend);
 
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = RequestBody.create(
@@ -49,23 +50,22 @@ public class FcmService {
         }
     }
 
-    private String makeMessage(String targetToken, String title, String body) throws JsonParseException, JsonProcessingException {
+    private String makeMessage(FcmSend fcmSend) throws JsonParseException, JsonProcessingException {
         FcmMessage fcmMessage = FcmMessage.builder()
                 .message(FcmMessage.Message.builder()
-                        .token(targetToken)
+                        .token(fcmSend.getTargetToken())
                         .notification(FcmMessage.Notification.builder()
-                                .title(title)
-                                .body(body)
+                                .title(fcmSend.getTitle())
+                                .body(fcmSend.getBody())
                                 .build())
                         .build())
                 .validateOnly(false)
                 .build();
-
         return objectMapper.writeValueAsString(fcmMessage);
     }
 
     private String getAccessToken() throws IOException {
-        String firebaseConfigPath = "firebase/firebase_service_key.json";
+        String firebaseConfigPath = "firebase/plog-97f27-firebase-adminsdk-o0hru-10335d563f.json";
 
         GoogleCredentials googleCredentials = GoogleCredentials
                 .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())

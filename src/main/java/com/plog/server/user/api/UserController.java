@@ -34,8 +34,9 @@ public class UserController {
 
             return ResponseEntity.ok(new ApiResponse("로그인 성공", loginResponse));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("서버 오류: " + e.getMessage()));
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new ApiResponse("서버 오류: " + e.getMessage()));
+            return ResponseEntity.ok(new ApiResponse("사용자 없음", null));
         }
     }
 

@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FcmResponse{
+public class FcmSend {
     private String targetToken;
     private String title;
     private String body;
