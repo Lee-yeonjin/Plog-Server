@@ -8,6 +8,7 @@ import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.repository.ActivityRepository;
 import com.plog.server.plogging.repository.LocationRepository;
+import com.plog.server.plogging.service.GeocodeService;
 import com.plog.server.post.domain.Post;
 import com.plog.server.post.repository.PostRepository;
 import com.plog.server.profile.domain.Profile;
@@ -35,6 +36,7 @@ public class DummyData {
     private final MyBadgeRepository myBadgeRepository;
     private final ActivityRepository activityRepository;
     private final PostRepository postRepository;
+    private final GeocodeService geocodeService;
 
     @PostConstruct
     public void init (){
@@ -73,10 +75,22 @@ public class DummyData {
 
         log.info("주입성공");
 
+        Activity activity = Activity.builder()
+                .profile(profile)
+                .ploggingTime(120)
+                .distance(5.0)
+                .startPlace(geocodeService.getAddress(37.598769835423475,126.91542467032245))
+                .endPlace(geocodeService.getAddress(37.59587287526493,126.91504295184949))
+                .routeStatus(true)
+                .ploggingDate(LocalDate.now())
+                .build();
+        activityRepository.save(activity);
+
         Location startlocation = Location.builder()
                 .profile(profile)
                 .longitude(126.91542467032245)
                 .latitude(37.598769835423475)
+                .activity(activity)
                 .build();
 
         locationRepository.save(startlocation);
@@ -85,6 +99,7 @@ public class DummyData {
                 .profile(profile)
                 .longitude(126.91534860669759)
                 .latitude(37.59844091925552)
+                .activity(activity)
                 .build();
 
         locationRepository.save(location);
@@ -93,6 +108,7 @@ public class DummyData {
                 .profile(profile)
                 .longitude(126.91527253863138)
                 .latitude(37.59811650797162)
+                .activity(activity)
                 .build();
 
         locationRepository.save(location2);
@@ -101,6 +117,7 @@ public class DummyData {
                 .profile(profile)
                 .longitude(126.91508093028813 )
                 .latitude(37.59732800321048)
+                .activity(activity)
                 .build();
 
         locationRepository.save(location3);
@@ -109,6 +126,7 @@ public class DummyData {
                 .profile(profile)
                 .longitude(126.91504295184949)
                 .latitude(37.59587287526493)
+                .activity(activity)
                 .build();
 
         locationRepository.save(endlocation);
@@ -124,11 +142,67 @@ public class DummyData {
                 .meetPlace("모임 장소 " )
                 .time(LocalDate.now())
                 .schedule("2024-09-01")
-                .profile(profile) // Associate the post with the created profile
+                .profile(profile)
                 .build();
         postRepository.save(post);
         log.info("더미 포스트 데이터 저장 완료");
 
-    }
+        //user2
+        User user2 = User.builder()
+                .userAccount("user2")
+                .userPw("1234")
+                .userEmail("email2")
+                .userUUID(UUID.randomUUID())
+                .build();
+        userRepository.save(user2);
 
+        Profile profile2 = Profile.builder()
+                .userNickname("nickname")
+                .user(user2)
+                .badge(badge)
+                .totalTrash(30)
+                .totalTime(30.0)
+                .totalCoin(30)
+                .totalDistance(30.0)
+                .userMembership(false)
+                .ploggingStatus(true)
+                .build();
+        profileRepository.save(profile2);
+
+        MyBadge myBadge2 = MyBadge.builder()
+                .badge(badge)
+                .profile(profile2)
+                .build();
+        myBadgeRepository.save(myBadge2);
+
+
+        //user2
+        User user3 = User.builder()
+                .userAccount("user3")
+                .userPw("1234")
+                .userEmail("email3")
+                .userUUID(UUID.randomUUID())
+                .build();
+        userRepository.save(user3);
+
+        Profile profile3 = Profile.builder()
+                .userNickname("플로거")
+                .user(user3)
+                .badge(badge)
+                .totalTrash(50)
+                .totalTime(50.0)
+                .totalCoin(50)
+                .totalDistance(50.0)
+                .userMembership(false)
+                .ploggingStatus(true)
+                .build();
+        profileRepository.save(profile3);
+
+        MyBadge myBadge3 = MyBadge.builder()
+                .badge(badge)
+                .profile(profile3)
+                .build();
+        myBadgeRepository.save(myBadge3);
+
+    }
 }
