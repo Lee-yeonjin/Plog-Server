@@ -73,44 +73,45 @@ public class DummyData {
 
         log.info("주입성공");
 
-        Activity activity = Activity.builder()
+        Location startlocation = Location.builder()
                 .profile(profile)
-                .ploggingTime(30) // 예시: 30분
-                .distance(1.0) // 예시: 1km
-                .routeStatus(false)
-                .startPlace("시작 장소")
-                .endPlace("종료 장소")
-                .ploggingDate(LocalDate.now())
+                .longitude(126.91542467032245)
+                .latitude(37.598769835423475)
                 .build();
-        activityRepository.save(activity);
-        log.info("활동 정보 저장");
+
+        locationRepository.save(startlocation);
 
         Location location = Location.builder()
                 .profile(profile)
-                .longitude(123)
-                .latitude(123)
-                .activity(activity)
+                .longitude(126.91534860669759)
+                .latitude(37.59844091925552)
                 .build();
 
         locationRepository.save(location);
 
         Location location2 = Location.builder()
                 .profile(profile)
-                .longitude(124)
-                .latitude(124)
-                .activity(activity)
+                .longitude(126.91527253863138)
+                .latitude(37.59811650797162)
                 .build();
 
         locationRepository.save(location2);
 
         Location location3 = Location.builder()
                 .profile(profile)
-                .longitude(125)
-                .latitude(125)
-                .activity(activity)
+                .longitude(126.91508093028813 )
+                .latitude(37.59732800321048)
                 .build();
 
         locationRepository.save(location3);
+
+        Location endlocation = Location.builder()
+                .profile(profile)
+                .longitude(126.91504295184949)
+                .latitude(37.59587287526493)
+                .build();
+
+        locationRepository.save(endlocation);
 
         log.info("위치 정보 저장");
 
