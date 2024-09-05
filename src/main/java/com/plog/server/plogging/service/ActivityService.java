@@ -53,9 +53,17 @@ public class ActivityService {
         // 사용자와 연관된 아직 Activity와 연결되지 않은 Location 조회
         List<Location> locations = locationRepository.findByProfileAndActivityIsNull(profile);
 
-        // 주소 정보 설정
-        String startPlace = geocodeService.getAddress(activityRequest.getLatitude1(), activityRequest.getLongitude1());
-        String endPlace = geocodeService.getAddress(activityRequest.getLatitude2(), activityRequest.getLongitude2());
+        if (locations.isEmpty()) {
+            throw new IllegalArgumentException("위치 정보가 없습니다");
+        }
+
+        // 시작 위치와 끝 위치를 가져옵니다.
+        Location startLocation = locations.get(0); // 첫 번째 위치
+        Location endLocation = locations.get(locations.size() - 1); // 마지막 위치
+
+        // 주소 정보를 설정
+        String startPlace = geocodeService.getAddress(startLocation.getLatitude(), startLocation.getLongitude());
+        String endPlace = geocodeService.getAddress(endLocation.getLatitude(), endLocation.getLongitude());
 
         // 새로운 활동 생성
         Activity activity = Activity.builder()
