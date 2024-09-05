@@ -131,12 +131,18 @@ public class ActivityService {
         return true;
     }
 
-    //등록된 루트 목록 조회
-    // routeStatus가 true인 모든 액티비티 조회
-    public List<ActivityResponse> getAllRoute() {
-        List<Activity> activeActivities = activityRepository.findByRouteStatus(true);
-        return activeActivities.stream()
-                .map(ActivityResponse::new)
+    //등록된 모든 루트 조회
+    public List<RouteListResponse> getAllRouteList(){
+        List<Activity> activities = activityRepository.findByRouteStatus(true);
+
+        return activities.stream()
+                .map(activity -> new RouteListResponse(
+                        activity.getActivityId(),
+                        activity.getPloggingTime(),
+                        activity.getDistance(),
+                        activity.getStartPlace(),
+                        activity.getEndPlace()
+                ))
                 .collect(Collectors.toList());
     }
 

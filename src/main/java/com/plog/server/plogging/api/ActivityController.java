@@ -73,9 +73,9 @@ public class ActivityController {
 
     //전체 루트 조회
     @GetMapping("/all-route")
-    public ApiResponse<List<ActivityResponse>> getActiveActivities() {
-        List<ActivityResponse> activities = activityService.getAllRoute();
-        return new ApiResponse<>("전체 루트 조회 성공", activities);
+    public ApiResponse<List<RouteListResponse>> getAllRouteList(){
+        List<RouteListResponse> routeResponses = activityService.getAllRouteList();
+        return new ApiResponse<>("루트 전체 조회 성공", routeResponses);
     }
 
     //사용자의 루트 조회
