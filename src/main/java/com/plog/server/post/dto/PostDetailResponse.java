@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -20,8 +21,11 @@ public class PostDetailResponse {
     private String time;
     private String schedule;
     private String userNickname;
+    private boolean isLiked;
+    private boolean isJoined;
+    private Integer badgeIds;
 
-    public PostDetailResponse(Long postId, String title, String content, String plogPlace, String meetPlace, LocalDate time, String schedule, String userNickname) {
+    public PostDetailResponse(Long postId, String title, String content, String plogPlace, String meetPlace, LocalDate time, String schedule, String userNickname, boolean isLiked, boolean isJoined, Integer badgeIds) {
         this.postId = postId;
         this.title = title;
         this.content = content;
@@ -30,5 +34,8 @@ public class PostDetailResponse {
         this.time = time.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")); // 포맷팅
         this.schedule = schedule;
         this.userNickname = userNickname;
+        this.isLiked = isLiked;
+        this.isJoined = isJoined;
+        this.badgeIds = badgeIds;
     }
 }

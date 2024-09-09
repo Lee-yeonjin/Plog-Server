@@ -68,6 +68,7 @@ public class DummyData {
         MyBadge myBadge = MyBadge.builder()
                 .badge(badge)
                 .profile(profile)
+                .myBadgeStatus(true)
                 .build();
         myBadgeRepository.save(myBadge);
 
@@ -127,6 +128,75 @@ public class DummyData {
                 .build();
         postRepository.save(post);
         log.info("더미 포스트 데이터 저장 완료");
+
+        User user2 = User.builder()
+                .userAccount("user2")
+                .userPw("1234")
+                .userEmail("email2")
+                .userUUID(UUID.randomUUID())
+                .build();
+        userRepository.save(user2);
+
+        Badge badge2 = Badge.builder()
+                .badgeGoal("기본 배지")
+                .cost(0)
+                .build();
+        badgeRepository.save(badge2);
+
+        Profile profile2 = Profile.builder()
+                .userNickname("메롱2")
+                .user(user2)
+                .badge(badge)
+                .totalTrash(0)
+                .totalTime(0.0)
+                .totalCoin(0)
+                .totalDistance(0.0)
+                .userMembership(false)
+                .ploggingStatus(false)
+                .build();
+        profileRepository.save(profile2);
+
+        MyBadge myBadge2 = MyBadge.builder()
+                .badge(badge2)
+                .profile(profile2)
+                .myBadgeStatus(true)
+                .build();
+        myBadgeRepository.save(myBadge2);
+
+        User user3 = User.builder()
+                .userAccount("user3")
+                .userPw("1234")
+                .userEmail("email3")
+                .userUUID(UUID.randomUUID())
+                .build();
+        userRepository.save(user3);
+
+        Badge badge3 = Badge.builder()
+                .badgeGoal("기본 배지")
+                .cost(0)
+                .build();
+        badgeRepository.save(badge3);
+
+        Profile profile3 = Profile.builder()
+                .userNickname("메롱3")
+                .user(user3)
+                .badge(badge)
+                .totalTrash(0)
+                .totalTime(0.0)
+                .totalCoin(0)
+                .totalDistance(0.0)
+                .userMembership(false)
+                .ploggingStatus(false)
+                .build();
+        profileRepository.save(profile3);
+
+        MyBadge myBadge3 = MyBadge.builder()
+                .badge(badge3)
+                .profile(profile3)
+                .myBadgeStatus(true)
+                .build();
+        myBadgeRepository.save(myBadge3);
+        log.info("주입성공");
 
     }
 
