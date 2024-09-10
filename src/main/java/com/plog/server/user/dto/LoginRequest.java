@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class LoginRequest {
     private String userAccount;
     private String userPw;
+    private String deviceToken;
 }

@@ -33,6 +33,8 @@ public class FcmController {
         Profile profile = profileRepository.findByUserUserUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
 
+        log.info("NoticeResponse data: {}", noticeResponse);
+
         fcmService.saveOrUpdateFcm(profile, noticeResponse);
 
         ApiResponse apiResponse = new ApiResponse("알림 설정 성공", null);

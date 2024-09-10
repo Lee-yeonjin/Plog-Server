@@ -68,7 +68,7 @@ public class ActivityService {
         // 새로운 활동 생성
         Activity activity = Activity.builder()
                 .profile(profile)
-                .ploggingTime(activityRequest.getAcitvityTime())
+                .ploggingTime(activityRequest.getActivityTime())
                 .distance(activityRequest.getDistance())
                 .locations(locations) // 위치 정보 저장
                 .startPlace(startPlace)

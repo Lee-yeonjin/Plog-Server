@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
@@ -57,6 +58,8 @@ public class PostService {
                 .plogPlace(postRequest.getPlogPlace())
                 .meetPlace(postRequest.getMeetPlace())
                 .schedule(postRequest.getSchedule())
+                .ploggingLatitude(postRequest.getPloggingLatitude()) // 위도 추가
+                .ploggingLongitude(postRequest.getPloggingLongitude())
                 .time(LocalDate.now())
                 .profile(profile)
                 .joinCount(0)
@@ -65,12 +68,25 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         // 알림 전송
-
         List<Fcm> enabledFcmList = fcmRepository.findByNotificationEnabledTrue();
         for (Fcm fcm : enabledFcmList) {
-            String targetToken = fcm.getDeviceToken(); // deviceToken을 가져옴
-            FcmSend fcmSend = new FcmSend(targetToken, "새 게시글 알림", "새 게시글이 생성되었습니다: " + savedPost.getTitle());
-            fcmService.sendMessageTo(fcmSend);
+            Profile fcmProfile = fcm.getProfile();
+
+            if (fcmProfile.equals(profile)) {
+                continue; // 작성자는 알림을 받지 않음
+            }
+
+            double userLatitude = fcm.getLatitude();
+            double userLongitude = fcm.getLongitude();
+            double postLatitude = post.getPloggingLatitude(); // 게시글의 위도
+            double postLongitude = post.getPloggingLongitude(); // 게시글의 경도
+
+            // HaversineService를 사용하여 거리 계산
+            if (HaversineService.calculateDistance(userLatitude, userLongitude, postLatitude, postLongitude) <= 5) { // 5km 이내
+                String targetToken = fcm.getDeviceToken(); // deviceToken을 가져옴
+                FcmSend fcmSend = new FcmSend(targetToken, "당신의 주변에서 함께 플로깅 할 사람을 모집하는 글이 올라왔어요!", "알림을 눌러서 게시글을 확인해보세요!");
+                fcmService.sendMessageTo(fcmSend);
+            }
         }
         return savedPost;
     }
@@ -127,6 +143,7 @@ public class PostService {
     // 게시글 목록 조회
     public List<PostListResponse> getAllPosts() {
         return postRepository.findAll().stream()
+                .sorted(Comparator.comparing(Post::getPostId).reversed())
                 .map(post -> {
                     // 작성자의 배지 ID를 조회
                     List<MyBadge> mainBadges = myBadgeRepository.findMainBadgesByProfile(post.getProfile());
@@ -165,6 +182,7 @@ public class PostService {
 
         // Profile을 기반으로 게시글 목록 조회
         return postRepository.findByProfile(profile).stream()
+                .sorted(Comparator.comparing(Post::getPostId).reversed())
                 .map(post -> new PostListResponse(
                         post.getPostId(),
                         post.getTitle(),
@@ -198,11 +216,12 @@ public class PostService {
         return joinRepository.existsByProfileAndPost(profile, findPostById(postId));
     }
 
-    // 내가 참가 신청한 게시글 목록 조회
+    // 참가한 게시글 목록 조회
     public List<PostListResponse> getJoinedPostsByProfile(Profile profile) {
         List<Post> joinedPosts = postRepository.findJoinedPostsByProfile(profile);
 
         return joinedPosts.stream()
+                .sorted(Comparator.comparing(Post::getPostId).reversed())
                 .map(post -> {
                     // 게시글 작성자의 배지 ID를 조회
                     List<MyBadge> authorBadges = myBadgeRepository.findMainBadgesByProfile(post.getProfile());
@@ -266,11 +285,11 @@ public class PostService {
     }
 
     // 게시글 찜 취소
-        public void unlikePost(Profile profile, Long postId) {
+    public void unlikePost(Profile profile, Long postId) {
         Post post = findPostById(postId);
 
-        com.plog.server.post.domain.Like like = likeRepository.findByProfileAndPost(profile, post)
-                .orElseThrow(() -> new RuntimeException("찜하지 않은 게시글입니다."));
+        Like like = likeRepository.findByProfileAndPost(profile, post)
+                .orElseThrow(() -> new RuntimeException("참여하지 않은 게시글입니다."));
 
         likeRepository.delete(like);
     }
@@ -279,7 +298,7 @@ public class PostService {
     public void decreaseLikeCount(Long postId) {
         Post post = findPostById(postId);
         if (post != null) {
-            post.setJoinCount(post.getLikeCount() - 1);
+            post.setLikeCount(post.getLikeCount() - 1); // likeCount로 수정
             postRepository.save(post);
         } else {
             throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
@@ -312,6 +331,7 @@ public class PostService {
                             badgeId // 게시글 작성자의 배지 ID 추가
                     );
                 })
+                .sorted(Comparator.comparingLong(LikeResponse::getPostId).reversed())
                 .collect(Collectors.toList());
     }
 }

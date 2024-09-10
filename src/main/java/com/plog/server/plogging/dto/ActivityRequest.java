@@ -9,5 +9,5 @@ import java.time.LocalTime;
 @Data
 public class ActivityRequest {
     Double distance;
-    Integer acitvityTime;
+    Integer activityTime;
 }
