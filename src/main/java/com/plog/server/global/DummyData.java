@@ -24,6 +24,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static java.lang.Boolean.TRUE;
+
 @Component
 @Transactional
 @RequiredArgsConstructor
@@ -172,6 +174,7 @@ public class DummyData {
         MyBadge myBadge2 = MyBadge.builder()
                 .badge(badge)
                 .profile(profile2)
+                .myBadgeStatus(true)
                 .build();
         myBadgeRepository.save(myBadge2);
 
@@ -199,6 +202,7 @@ public class DummyData {
         MyBadge myBadge3 = MyBadge.builder()
                 .badge(badge)
                 .profile(profile3)
+                .myBadgeStatus(true)
                 .build();
         myBadgeRepository.save(myBadge3);
 
