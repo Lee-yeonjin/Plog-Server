@@ -8,6 +8,7 @@ import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.repository.ActivityRepository;
 import com.plog.server.plogging.repository.LocationRepository;
+import com.plog.server.plogging.service.GeocodeService;
 import com.plog.server.post.domain.Post;
 import com.plog.server.post.repository.PostRepository;
 import com.plog.server.profile.domain.Profile;
@@ -35,6 +36,7 @@ public class DummyData {
     private final MyBadgeRepository myBadgeRepository;
     private final ActivityRepository activityRepository;
     private final PostRepository postRepository;
+    private final GeocodeService geocodeService;
 
     @PostConstruct
     public void init (){
@@ -76,20 +78,28 @@ public class DummyData {
 
         Activity activity = Activity.builder()
                 .profile(profile)
-                .ploggingTime(30) // 예시: 30분
-                .distance(1.0) // 예시: 1km
-                .routeStatus(false)
-                .startPlace("시작 장소")
-                .endPlace("종료 장소")
+                .ploggingTime(120)
+                .distance(5.0)
+                .startPlace(geocodeService.getAddress(37.598769835423475,126.91542467032245))
+                .endPlace(geocodeService.getAddress(37.59587287526493,126.91504295184949))
+                .routeStatus(true)
                 .ploggingDate(LocalDate.now())
                 .build();
         activityRepository.save(activity);
-        log.info("활동 정보 저장");
+
+        Location startlocation = Location.builder()
+                .profile(profile)
+                .longitude(126.91542467032245)
+                .latitude(37.598769835423475)
+                .activity(activity)
+                .build();
+
+        locationRepository.save(startlocation);
 
         Location location = Location.builder()
                 .profile(profile)
-                .longitude(123)
-                .latitude(123)
+                .longitude(126.91534860669759)
+                .latitude(37.59844091925552)
                 .activity(activity)
                 .build();
 
@@ -97,8 +107,8 @@ public class DummyData {
 
         Location location2 = Location.builder()
                 .profile(profile)
-                .longitude(124)
-                .latitude(124)
+                .longitude(126.91527253863138)
+                .latitude(37.59811650797162)
                 .activity(activity)
                 .build();
 
@@ -106,12 +116,21 @@ public class DummyData {
 
         Location location3 = Location.builder()
                 .profile(profile)
-                .longitude(125)
-                .latitude(125)
+                .longitude(126.91508093028813 )
+                .latitude(37.59732800321048)
                 .activity(activity)
                 .build();
 
         locationRepository.save(location3);
+
+        Location endlocation = Location.builder()
+                .profile(profile)
+                .longitude(126.91504295184949)
+                .latitude(37.59587287526493)
+                .activity(activity)
+                .build();
+
+        locationRepository.save(endlocation);
 
         log.info("위치 정보 저장");
 
@@ -124,7 +143,7 @@ public class DummyData {
                 .meetPlace("모임 장소 " )
                 .time(LocalDate.now())
                 .schedule("2024-09-01")
-                .profile(profile) // Associate the post with the created profile
+                .profile(profile)
                 .build();
         postRepository.save(post);
         log.info("더미 포스트 데이터 저장 완료");
@@ -137,29 +156,22 @@ public class DummyData {
                 .build();
         userRepository.save(user2);
 
-        Badge badge2 = Badge.builder()
-                .badgeGoal("기본 배지")
-                .cost(0)
-                .build();
-        badgeRepository.save(badge2);
-
         Profile profile2 = Profile.builder()
-                .userNickname("메롱2")
+                .userNickname("nickname")
                 .user(user2)
                 .badge(badge)
-                .totalTrash(0)
-                .totalTime(0.0)
-                .totalCoin(0)
-                .totalDistance(0.0)
+                .totalTrash(30)
+                .totalTime(30.0)
+                .totalCoin(30)
+                .totalDistance(30.0)
                 .userMembership(false)
-                .ploggingStatus(false)
+                .ploggingStatus(true)
                 .build();
         profileRepository.save(profile2);
 
         MyBadge myBadge2 = MyBadge.builder()
-                .badge(badge2)
+                .badge(badge)
                 .profile(profile2)
-                .myBadgeStatus(true)
                 .build();
         myBadgeRepository.save(myBadge2);
 
@@ -171,33 +183,24 @@ public class DummyData {
                 .build();
         userRepository.save(user3);
 
-        Badge badge3 = Badge.builder()
-                .badgeGoal("기본 배지")
-                .cost(0)
-                .build();
-        badgeRepository.save(badge3);
-
         Profile profile3 = Profile.builder()
-                .userNickname("메롱3")
+                .userNickname("플로거")
                 .user(user3)
                 .badge(badge)
-                .totalTrash(0)
-                .totalTime(0.0)
-                .totalCoin(0)
-                .totalDistance(0.0)
+                .totalTrash(50)
+                .totalTime(50.0)
+                .totalCoin(50)
+                .totalDistance(50.0)
                 .userMembership(false)
-                .ploggingStatus(false)
+                .ploggingStatus(true)
                 .build();
         profileRepository.save(profile3);
 
         MyBadge myBadge3 = MyBadge.builder()
-                .badge(badge3)
+                .badge(badge)
                 .profile(profile3)
-                .myBadgeStatus(true)
                 .build();
         myBadgeRepository.save(myBadge3);
-        log.info("주입성공");
 
     }
-
 }
