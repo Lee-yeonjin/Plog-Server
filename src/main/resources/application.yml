@@ -1,31 +1,35 @@
 server:
   port: 8080
 
+logging.level:
+  org.hibernate.SQL: debug
+
 spring:
   config:
     import:
       - classpath:/yaml/application-local.yml
       - classpath:/yaml/application-prod.yml
+      - classpath:/yaml/application-aws.yml
+      - classpath:/yaml/application-secret.yml
 
   profiles:
     active: local #default
-
-  #  smtp
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: nkdy50315031@gmail.com
-    password: zczxsylqqelzckrq
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
-
-logging.level:
-  org.hibernate.SQL: debug
+    group:
+      local:
+        - local
+        - aws
+        - secret
+      prod:
+        - prod
+        - aws
+        - -secret
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+---
+spring:
+  config:
+    activate:
+      on-profile: prod

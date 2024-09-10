@@ -1,0 +1,18 @@
+spring:
+  config:
+    activate:
+      on-profile: aws
+
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+file:
+  allowed-extensions: jpg,png
