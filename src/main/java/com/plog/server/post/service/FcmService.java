@@ -28,7 +28,6 @@ public class FcmService {
     private final FcmRepository fcmRepository;
     private final String API_URL = "https://fcm.googleapis.com/v1/projects/plog-97f27/messages:send";
     private final ObjectMapper objectMapper = new ObjectMapper(); // ObjectMapper 인스턴스 생성
-    //private final String serverKey = "40776a8e08e417e883da279643ed2b79863f2f68";
 
     // Fcm 테이블 데이터 생성 & 수정
     public void saveOrUpdateFcm(Profile profile, NoticeResponse noticeResponse) {
@@ -119,49 +118,10 @@ public class FcmService {
     }
 
     // 알림설정 여부 true인 사람들 찾아내기
-    public List<Long> getEnabledProfileIds() {
-        List<Fcm> enabledFcmList = fcmRepository.findByNotificationEnabledTrue();
-        return enabledFcmList.stream()
-                .map(fcm -> fcm.getProfile().getProfileId()) // ProfileId가 있는 경우
-                .collect(Collectors.toList());
-    }
-}
-
-//        try {
-//            String message = makeMessage(fcmSend);
-//
-//            OkHttpClient client = new OkHttpClient(); // 재사용을 고려
-//            RequestBody requestBody = RequestBody.create(
-//                    message.getBytes(StandardCharsets.UTF_8),
-//                    MediaType.get("application/json; charset=utf-8")
-//            );
-//            Request request = new Request.Builder()
-//                    .url(API_URL)
-//                    .post(requestBody)
-//                    .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + getAccessToken())
-//                    .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8")
-//                    .build();
-//
-//            Response response = client.newCall(request).execute();
-//            if (response.isSuccessful()) {
-//                System.out.println(response.body().string());
-//            } else {
-//                System.out.println("Error: " + response.code() + " - " + response.message());
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace(); // 예외 로그 출력
-//        }
-//
-//    // 알림설정 TRUE인 사용자들을 찾음
-//    public void sendNotificationsToEnabledUsers(String title, String body) throws IOException {
+//    public List<Long> getEnabledProfileIds() {
 //        List<Fcm> enabledFcmList = fcmRepository.findByNotificationEnabledTrue();
-//
-//        for (Fcm fcm : enabledFcmList) {
-//            FcmSend fcmSend = FcmSend.builder()
-//                    .targetToken(fcm.getDeviceToken())
-//                    .title(title)
-//                    .body(body)
-//                    .build();
-//            sendMessageTo(fcmSend);
-//        }
+//        return enabledFcmList.stream()
+//                .map(fcm -> fcm.getProfile().getProfileId()) // ProfileId가 있는 경우
+//                .collect(Collectors.toList());
 //    }
+}
