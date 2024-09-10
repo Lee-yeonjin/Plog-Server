@@ -11,6 +11,7 @@ spring:
       - classpath:/yaml/application-prod.yml
       - classpath:/yaml/application-aws.yml
       - classpath:/yaml/application-secret.yml
+      - classpath:/yaml/application-file.yml
 
   profiles:
     active: local #default
@@ -19,10 +20,12 @@ spring:
         - local
         - aws
         - secret
+        - file
       prod:
         - prod
         - aws
-        - -secret
+        - secret
+        - file
 ---
 spring:
   config:
