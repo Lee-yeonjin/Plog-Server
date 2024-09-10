@@ -15,12 +15,14 @@ public class LikeResponse {
     private String title;
     private String  time;
     private String userNickname;
+    private int badgeId;
 
-    public LikeResponse(Long postId, String title, LocalDate time, String userNickname) {
+    public LikeResponse(Long postId, String title, LocalDate time, String userNickname, Integer badgeId) {
         this.postId = postId;
         this.title = title;
         this.time = time.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
         this.userNickname = userNickname;
+        this.badgeId = badgeId;
     }
 }
 

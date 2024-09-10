@@ -24,6 +24,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static java.lang.Boolean.TRUE;
+
 @Component
 @Transactional
 @RequiredArgsConstructor
@@ -70,6 +72,7 @@ public class DummyData {
         MyBadge myBadge = MyBadge.builder()
                 .badge(badge)
                 .profile(profile)
+                .myBadgeStatus(true)
                 .build();
         myBadgeRepository.save(myBadge);
 
@@ -147,7 +150,6 @@ public class DummyData {
         postRepository.save(post);
         log.info("더미 포스트 데이터 저장 완료");
 
-        //user2
         User user2 = User.builder()
                 .userAccount("user2")
                 .userPw("1234")
@@ -172,11 +174,10 @@ public class DummyData {
         MyBadge myBadge2 = MyBadge.builder()
                 .badge(badge)
                 .profile(profile2)
+                .myBadgeStatus(true)
                 .build();
         myBadgeRepository.save(myBadge2);
 
-
-        //user2
         User user3 = User.builder()
                 .userAccount("user3")
                 .userPw("1234")
@@ -201,6 +202,7 @@ public class DummyData {
         MyBadge myBadge3 = MyBadge.builder()
                 .badge(badge)
                 .profile(profile3)
+                .myBadgeStatus(true)
                 .build();
         myBadgeRepository.save(myBadge3);
 

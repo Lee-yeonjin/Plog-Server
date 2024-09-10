@@ -1,20 +1,30 @@
 package com.plog.server.post.service;
 
+import com.plog.server.badge.domain.MyBadge;
+import com.plog.server.badge.repository.MyBadgeRepository;
+import com.plog.server.post.domain.Fcm;
 import com.plog.server.post.domain.Join;
 import com.plog.server.post.domain.Like;
 import com.plog.server.post.domain.Post;
+import com.plog.server.post.dto.FcmSend;
 import com.plog.server.post.dto.LikeResponse;
 import com.plog.server.post.dto.PostDetailResponse;
 import com.plog.server.post.dto.PostListResponse;
+import com.plog.server.post.repository.FcmRepository;
 import com.plog.server.post.repository.JoinRepository;
 import com.plog.server.post.repository.LikeRepository;
 import com.plog.server.post.repository.PostRepository;
 import com.plog.server.profile.domain.Profile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +39,9 @@ public class PostService {
     private final JoinRepository joinRepository;
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
+    private final MyBadgeRepository myBadgeRepository;
+    private final FcmService fcmService;
+    private final FcmRepository fcmRepository;
 
     // 게시글 아이디 찾기
     public Post findPostById(Long postId) {
@@ -37,9 +50,29 @@ public class PostService {
     }
 
     // 게시글 생성
-    public Post createPost(Post post) {
+    public Post createPost(Profile profile, PostDetailResponse postRequest) {
+        Post post = Post.builder()
+                .title(postRequest.getTitle())
+                .content(postRequest.getContent())
+                .plogPlace(postRequest.getPlogPlace())
+                .meetPlace(postRequest.getMeetPlace())
+                .schedule(postRequest.getSchedule())
+                .time(LocalDate.now())
+                .profile(profile)
+                .joinCount(0)
+                .build();
 
-        return postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+
+        // 알림 전송
+
+        List<Fcm> enabledFcmList = fcmRepository.findByNotificationEnabledTrue();
+        for (Fcm fcm : enabledFcmList) {
+            String targetToken = fcm.getDeviceToken(); // deviceToken을 가져옴
+            FcmSend fcmSend = new FcmSend(targetToken, "새 게시글 알림", "새 게시글이 생성되었습니다: " + savedPost.getTitle());
+            fcmService.sendMessageTo(fcmSend);
+        }
+        return savedPost;
     }
 
     // 게시글 삭제
@@ -49,9 +82,24 @@ public class PostService {
     }
 
     // 게시글 상세 조회
-    public PostDetailResponse getPostDetail(Long postId) {
+    public PostDetailResponse getPostDetail(Profile profile, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        boolean isLiked = checkIfLiked(profile, post);
+        boolean isJoined = checkIfJoined(profile, post);
+
+        List<MyBadge> mainBadges = myBadgeRepository.findMainBadgesByProfile(post.getProfile());
+
+        Optional<Long> badgeIdOptional = mainBadges.stream()
+                .filter(myBadge -> myBadge.myBadgeStatus()) // 정확한 메서드 이름 사용
+                .map(myBadge -> myBadge.getBadge().getBadgeId())
+                .findFirst();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = post.getTime().format(formatter);
+
+        int badgeId = badgeIdOptional.map(Long::intValue).orElse(1);
 
         return new PostDetailResponse(
                 post.getPostId(),
@@ -59,31 +107,71 @@ public class PostService {
                 post.getContent(),
                 post.getPlogPlace(),
                 post.getMeetPlace(),
-                post.getTime(), // LocalDate를 그대로 전달
+                formattedDate,
                 post.getSchedule(),
-                post.getProfile().getUserNickname() // 마지막 괄호 위치 수정
-        ); // 괄호 위치 수정
+                post.getProfile().getUserNickname(),
+                isLiked,
+                isJoined,
+                badgeId
+        );
+    }
+
+    private boolean checkIfLiked(Profile profile, Post post) {
+        return likeRepository.existsByProfileAndPost(profile, post);
+    }
+
+    private boolean checkIfJoined(Profile profile, Post post) {
+        return joinRepository.existsByProfileAndPost(profile, post);
     }
 
     // 게시글 목록 조회
     public List<PostListResponse> getAllPosts() {
         return postRepository.findAll().stream()
-                .map(post -> new PostListResponse(
-                        post.getPostId(),
-                        post.getTitle(),
-                        post.getTime(), // LocalDate를 그대로 전달
-                        post.getProfile().getUserNickname()))
+                .map(post -> {
+                    // 작성자의 배지 ID를 조회
+                    List<MyBadge> mainBadges = myBadgeRepository.findMainBadgesByProfile(post.getProfile());
+                    Optional<Long> badgeIdOptional = mainBadges.stream()
+                            .filter(myBadge -> myBadge.myBadgeStatus())
+                            .map(myBadge -> myBadge.getBadge().getBadgeId())
+                            .findFirst();
+
+                    // 배지 ID가 없으면 기본값 1 사용
+                    int badgeId = badgeIdOptional.map(Long::intValue).orElse(1);
+
+                    return new PostListResponse(
+                            post.getPostId(),
+                            post.getTitle(),
+                            post.getTime(), // LocalDate를 그대로 전달
+                            post.getProfile().getUserNickname(),
+                            badgeId // 배지 ID 추가
+                    );
+                })
                 .collect(Collectors.toList());
     }
 
     // 내가 작성한 게시글 목록 조회
-    public List<PostListResponse> getPostList(UUID userUUID) {
-        return postRepository.findByProfile_UserUserUUID(userUUID).stream()
+    public List<PostListResponse> getPostList(Profile profile) {
+        // 작성자의 배지 ID를 조회
+        List<MyBadge> mainBadges = myBadgeRepository.findMainBadgesByProfile(profile);
+
+        // 활성화된 배지 ID를 가져옵니다.
+        Optional<Long> badgeIdOptional = mainBadges.stream()
+                .filter(MyBadge::myBadgeStatus)
+                .map(myBadge -> myBadge.getBadge().getBadgeId())
+                .findFirst();
+
+        // 배지 ID가 없으면 기본값 1 사용
+        int badgeId = badgeIdOptional.map(Long::intValue).orElse(1); // Long을 int로 변환
+
+        // Profile을 기반으로 게시글 목록 조회
+        return postRepository.findByProfile(profile).stream()
                 .map(post -> new PostListResponse(
                         post.getPostId(),
                         post.getTitle(),
                         post.getTime(), // LocalDate를 그대로 전달
-                        post.getProfile().getUserNickname()))
+                        post.getProfile().getUserNickname(),
+                        badgeId // 배지 ID 추가
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -112,15 +200,27 @@ public class PostService {
 
     // 내가 참가 신청한 게시글 목록 조회
     public List<PostListResponse> getJoinedPostsByProfile(Profile profile) {
-        List<Join> joinedPosts = joinRepository.findByProfile(profile);
+        List<Post> joinedPosts = postRepository.findJoinedPostsByProfile(profile);
+
         return joinedPosts.stream()
-                .map(join -> {
-                    Post post = join.getPost(); // Join 엔티티에서 Post 가져오기
+                .map(post -> {
+                    // 게시글 작성자의 배지 ID를 조회
+                    List<MyBadge> authorBadges = myBadgeRepository.findMainBadgesByProfile(post.getProfile());
+                    Optional<Long> authorBadgeIdOptional = authorBadges.stream()
+                            .filter(MyBadge::myBadgeStatus)
+                            .map(myBadge -> myBadge.getBadge().getBadgeId())
+                            .findFirst();
+
+                    // 배지 ID가 없으면 기본값 1 사용
+                    int BadgeId = authorBadgeIdOptional.map(Long::intValue).orElse(1); // Long을 int로 변환
+
                     return new PostListResponse(
                             post.getPostId(),
                             post.getTitle(),
-                            post.getTime(),
-                            post.getProfile().getUserNickname());
+                            post.getTime(), // LocalDate를 그대로 전달
+                            post.getProfile().getUserNickname(),
+                            BadgeId // 게시글 작성자의 배지 ID 추가
+                    );
                 })
                 .collect(Collectors.toList());
     }
@@ -189,17 +289,29 @@ public class PostService {
     // 찜한 게시글 목록 조회
     public List<LikeResponse> getLikedPostsByProfile(Profile profile) {
         List<Like> likedPosts = likeRepository.findByProfile(profile);
+
         return likedPosts.stream()
                 .map(like -> {
                     Post post = like.getPost();
+
+                    // 게시글 작성자의 배지 ID를 조회
+                    List<MyBadge> authorBadges = myBadgeRepository.findMainBadgesByProfile(post.getProfile());
+                    Optional<Long> authorBadgeIdOptional = authorBadges.stream()
+                            .filter(MyBadge::myBadgeStatus)
+                            .map(myBadge -> myBadge.getBadge().getBadgeId())
+                            .findFirst();
+
+                    // 배지 ID가 없으면 기본값 1 사용
+                    int badgeId = authorBadgeIdOptional.map(Long::intValue).orElse(1);
+
                     return new LikeResponse(
                             post.getPostId(),
                             post.getTitle(),
                             post.getTime(),
-                            post.getProfile().getUserNickname()
+                            post.getProfile().getUserNickname(),
+                            badgeId // 게시글 작성자의 배지 ID 추가
                     );
                 })
                 .collect(Collectors.toList());
     }
-
 }

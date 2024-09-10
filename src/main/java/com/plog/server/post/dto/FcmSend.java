@@ -1,11 +1,13 @@
 package com.plog.server.post.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
-public class FcmResponse{
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class FcmSend {
     private String targetToken;
     private String title;
     private String body;

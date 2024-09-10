@@ -33,18 +33,8 @@ public class PostController {
         Profile profile = profileRepository.findByUserUserUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
 
-        Post post = Post.builder()
-                .title(postRequest.getTitle())
-                .content(postRequest.getContent())
-                .plogPlace(postRequest.getPlogPlace())
-                .meetPlace(postRequest.getMeetPlace())
-                .schedule(postRequest.getSchedule())
-                .time(LocalDate.now()) // String을 LocalDate로 변환
-                .profile(profile)
-                .joinCount(0)
-                .build();
+        Post savedPost = postService.createPost(profile, postRequest);
 
-        postService.createPost(post);
         ApiResponse apiResponse = new ApiResponse("게시글 생성", null);
         return ResponseEntity.ok(apiResponse);
     }
@@ -82,13 +72,13 @@ public class PostController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    // 게시글 조회[디테일]
+    // 게시글 상세조회
     @GetMapping("/{uuid}/{postid}/post_detail")
     public ResponseEntity<ApiResponse> detailPost(@PathVariable UUID uuid, @PathVariable Long postid) {
         Profile profile = profileRepository.findByUserUserUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
 
-        PostDetailResponse postDetail = postService.getPostDetail(postid);
+        PostDetailResponse postDetail = postService.getPostDetail(profile, postid);
 
         ApiResponse apiResponse = new ApiResponse("게시글 상세 조회 성공", postDetail);
         return ResponseEntity.ok(apiResponse);
@@ -100,7 +90,7 @@ public class PostController {
         Profile profile = profileRepository.findByUserUserUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
 
-        List<PostListResponse> postlist = postService.getPostList(uuid);
+        List<PostListResponse> postlist = postService.getPostList(profile);
 
         ApiResponse apiResponse = new ApiResponse("게시글 목록 조회 성공", postlist);
         return ResponseEntity.ok(apiResponse);
