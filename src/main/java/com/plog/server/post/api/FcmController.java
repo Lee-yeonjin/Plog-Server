@@ -8,6 +8,8 @@ import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.repository.ProfileRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,7 @@ import java.util.UUID;
 
 import static com.sun.activation.registries.LogSupport.log;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/fcm")
 @RequiredArgsConstructor
@@ -37,14 +40,17 @@ public class FcmController {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<String> sendFcmMessage(@Valid @RequestBody FcmSend fcmResponse) {
+    public ResponseEntity<ApiResponse> sendFcmMessage(@Valid @RequestBody FcmSend fcmResponse) {
         log("푸시 메시지를 전송");
+
         try {
             fcmService.sendMessageTo(fcmResponse);
-            return ResponseEntity.ok("FCM message sent successfully");
+            ApiResponse apiResponse = new ApiResponse("FCM 메시지가 성공적으로 전송되었습니다.", null);
+            return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Failed to send FCM message: " + e.getMessage());
+            log.error("FCM 메시지 전송 실패: {}", e.getMessage());
+            ApiResponse apiResponse = new ApiResponse("FCM 메시지 전송 실패: " + e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
         }
     }
-
 }

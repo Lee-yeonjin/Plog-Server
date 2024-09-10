@@ -49,6 +49,7 @@ dependencies {
     implementation 'org.json:json:20210307'
 
     //fcm
+    implementation 'com.google.firebase:firebase-admin:7.1.0'
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0' // 또는 최신 버전
     implementation 'com.google.auth:google-auth-library-oauth2-http:0.26.0'

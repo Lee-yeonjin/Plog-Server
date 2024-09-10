@@ -2,12 +2,15 @@ package com.plog.server.post.service;
 
 import com.plog.server.badge.domain.MyBadge;
 import com.plog.server.badge.repository.MyBadgeRepository;
+import com.plog.server.post.domain.Fcm;
 import com.plog.server.post.domain.Join;
 import com.plog.server.post.domain.Like;
 import com.plog.server.post.domain.Post;
+import com.plog.server.post.dto.FcmSend;
 import com.plog.server.post.dto.LikeResponse;
 import com.plog.server.post.dto.PostDetailResponse;
 import com.plog.server.post.dto.PostListResponse;
+import com.plog.server.post.repository.FcmRepository;
 import com.plog.server.post.repository.JoinRepository;
 import com.plog.server.post.repository.LikeRepository;
 import com.plog.server.post.repository.PostRepository;
@@ -38,6 +41,7 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final MyBadgeRepository myBadgeRepository;
     private final FcmService fcmService;
+    private final FcmRepository fcmRepository;
 
     // 게시글 아이디 찾기
     public Post findPostById(Long postId) {
@@ -46,11 +50,6 @@ public class PostService {
     }
 
     // 게시글 생성
-//    public Post createPost(Post post) {
-//
-//        return postRepository.save(post);
-//    }
-
     public Post createPost(Profile profile, PostDetailResponse postRequest) {
         Post post = Post.builder()
                 .title(postRequest.getTitle())
@@ -58,7 +57,7 @@ public class PostService {
                 .plogPlace(postRequest.getPlogPlace())
                 .meetPlace(postRequest.getMeetPlace())
                 .schedule(postRequest.getSchedule())
-                .time(LocalDate.now()) // String을 LocalDate로 변환
+                .time(LocalDate.now())
                 .profile(profile)
                 .joinCount(0)
                 .build();
@@ -66,12 +65,13 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         // 알림 전송
-        try {
-            fcmService.sendNotificationsToEnabledUsers("새 게시글 알림", "새 게시글이 생성되었습니다: " + savedPost.getTitle());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
+        List<Fcm> enabledFcmList = fcmRepository.findByNotificationEnabledTrue();
+        for (Fcm fcm : enabledFcmList) {
+            String targetToken = fcm.getDeviceToken(); // deviceToken을 가져옴
+            FcmSend fcmSend = new FcmSend(targetToken, "새 게시글 알림", "새 게시글이 생성되었습니다: " + savedPost.getTitle());
+            fcmService.sendMessageTo(fcmSend);
+        }
         return savedPost;
     }
 
