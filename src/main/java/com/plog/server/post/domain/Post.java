@@ -34,6 +34,10 @@ public class Post {
 
     private String schedule;
 
+    private double ploggingLatitude;
+
+    private double ploggingLongitude;
+
     @ManyToOne
     @JoinColumn(name = "profile_id")
     private Profile profile;

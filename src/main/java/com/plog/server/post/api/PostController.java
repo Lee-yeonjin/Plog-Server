@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -179,7 +178,7 @@ public class PostController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    // 게시글 찜 확인
+    // 찜한 게시글 목록 조회
     @GetMapping("/{uuid}/likecheck")
     public ResponseEntity<ApiResponse> likeCheck(@PathVariable UUID uuid) {
         Profile profile = profileRepository.findByUserUserUUID(uuid)

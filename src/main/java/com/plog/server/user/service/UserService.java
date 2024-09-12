@@ -2,6 +2,7 @@ package com.plog.server.user.service;
 
 import com.plog.server.badge.domain.Badge;
 import com.plog.server.badge.repository.BadgeRepository;
+import com.plog.server.post.service.FcmService;
 import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.repository.ProfileRepository;
 import com.plog.server.profile.service.ProfileService;
@@ -30,6 +31,7 @@ public class UserService {
     private final ProfileService profileService;
     private final ProfileRepository profileRepository;
     private final BadgeRepository badgeRepository;
+    private final FcmService fcmService;
 
     // UUID 조회 추가
     public Optional<User> getUserByUUID(UUID useruuid) {
@@ -40,6 +42,7 @@ public class UserService {
     public LoginResponse login(LoginRequest loginRequest) {
         String userAccount = loginRequest.getUserAccount();
         String userPw = loginRequest.getUserPw();
+        String deviceToken = loginRequest.getDeviceToken();
 
         User user = userRepository.findByUserAccount(userAccount);
         if (user == null || !user.getUserPw().equals(userPw)) {
@@ -53,6 +56,8 @@ public class UserService {
 
         if (profileOptional.isPresent()) {
             userNickname = profileOptional.get().getUserNickname();
+
+            fcmService.saveOrUpdateFcm(profileOptional.get(), deviceToken);
         } else {
             throw new IllegalArgumentException("프로필을 찾을 수 없습니다.");
         }

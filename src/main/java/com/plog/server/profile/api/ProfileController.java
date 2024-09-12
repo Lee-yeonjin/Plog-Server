@@ -1,26 +1,31 @@
 package com.plog.server.profile.api;
 
 import com.plog.server.global.ApiResponse;
+import com.plog.server.post.dto.NoticeRequest;
+import com.plog.server.post.dto.NoticeResponse;
+import com.plog.server.post.service.FcmService;
 import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.dto.ActiveProfileResponse;
+import com.plog.server.profile.repository.ProfileRepository;
 import com.plog.server.profile.service.ProfileService;
 import com.plog.server.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/profile")
 @Slf4j
 public class ProfileController {
+    private final FcmService fcmService;
     private final ProfileService profileService;
+    private final ProfileRepository profileRepository;
 
     @GetMapping("/active")
     public ResponseEntity<ApiResponse<List<ActiveProfileResponse>>> getActivePloggingDetails() {
@@ -29,5 +34,16 @@ public class ProfileController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/{uuid}/MyPage")
+    public ResponseEntity<ApiResponse<NoticeRequest>> getMypage(@PathVariable UUID uuid) {
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
+
+        // 프로필 ID로 FCM 정보를 가져옵니다.
+        NoticeRequest noticeRequest = fcmService.getNoticeRequestByProfileId(profile);
+
+        ApiResponse<NoticeRequest> apiResponse = new ApiResponse<>("마이페이지 조회 성공", noticeRequest);
+        return ResponseEntity.ok(apiResponse);
+    }
 }
 

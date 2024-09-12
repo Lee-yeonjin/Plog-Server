@@ -5,9 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NoticeResponse {
+public class NoticeRequest {
     private boolean notificationEnabled; // 알림 설정 여부
-    private Double latitude; // 알림 위도
-    private Double longitude; // 알림 경도
     private String Location;
 }
