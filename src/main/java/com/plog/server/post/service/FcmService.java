@@ -88,6 +88,7 @@ public class FcmService {
     // 푸시알림 전송
     public void sendMessageTo(FcmSend fcmSend) {
         String message = makeMessage(fcmSend);
+        System.out.println("Sending message:" + message);
 
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = RequestBody.create(
@@ -125,7 +126,9 @@ public class FcmService {
                             .build())
                     .validateOnly(false)
                     .build();
-            return objectMapper.writeValueAsString(fcmMessage);
+            String jsonMessage = objectMapper.writeValueAsString(fcmMessage);
+            System.out.println("Constructed FCM message: " + jsonMessage); // 로그 추가
+            return jsonMessage;
         } catch (JsonProcessingException e) {
             e.printStackTrace(); // 예외 로그 출력
             return null; // 또는 적절한 기본값 처리
@@ -149,12 +152,4 @@ public class FcmService {
             return null; // 또는 적절한 기본값 처리
         }
     }
-
-    // 알림설정 여부 true인 사람들 찾아내기
-//    public List<Long> getEnabledProfileIds() {
-//        List<Fcm> enabledFcmList = fcmRepository.findByNotificationEnabledTrue();
-//        return enabledFcmList.stream()
-//                .map(fcm -> fcm.getProfile().getProfileId()) // ProfileId가 있는 경우
-//                .collect(Collectors.toList());
-//    }
 }

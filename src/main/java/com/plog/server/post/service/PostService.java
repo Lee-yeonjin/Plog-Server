@@ -82,10 +82,25 @@ public class PostService {
             double postLongitude = post.getPloggingLongitude(); // 게시글의 경도
 
             // HaversineService를 사용하여 거리 계산
-            if (HaversineService.calculateDistance(userLatitude, userLongitude, postLatitude, postLongitude) <= 5) { // 5km 이내
+            double distance = HaversineService.calculateDistance(userLatitude, userLongitude, postLatitude, postLongitude);
+            if (distance <= 5) { // 5km 이내
                 String targetToken = fcm.getDeviceToken(); // deviceToken을 가져옴
-                FcmSend fcmSend = new FcmSend(targetToken, "당신의 주변에서 함께 플로깅 할 사람을 모집하는 글이 올라왔어요!", "알림을 눌러서 게시글을 확인해보세요!");
-                fcmService.sendMessageTo(fcmSend);
+
+                // Token 유효성 확인
+                if (targetToken == null || targetToken.isEmpty()) {
+                    System.out.println("알림 전송 실패: 유효하지 않은 deviceToken입니다.");
+                    continue; // 유효하지 않은 토큰은 건너뜀
+                }
+
+                FcmSend fcmSend = new FcmSend(targetToken, "당신의 주변에서 함께 플로깅 할 사람을 모집하는 글이 올라왔어요\uD83D\uDE06", "알림을 눌러서 게시글을 확인해보세요!");
+                try {
+                    fcmService.sendMessageTo(fcmSend);
+                    System.out.println("알림 전송 성공: " + targetToken);
+                } catch (Exception e) {
+                    System.out.println("알림 전송 실패: " + e.getMessage());
+                }
+            } else {
+                System.out.println("알림 전송 건너뜀: 사용자와 게시글 간의 거리가 " + distance + "km입니다.");
             }
         }
         return savedPost;
