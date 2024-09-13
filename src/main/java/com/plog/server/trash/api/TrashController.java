@@ -24,10 +24,6 @@ import java.util.UUID;
 public class TrashController {
     private final TrashService trashService;
     private final ActivityRepository activityRepository;
-    private final ProfileRepository profileRepository;
-    private final LocationService locationService;
-    private final S3UploaderService s3UploaderService;
-    private final ActivityPhotoRepository activityPhotoRepository;
 
     //쓰레기 기록 저장 및 사진 저장
     @PostMapping("/{uuid}/{activityid}")

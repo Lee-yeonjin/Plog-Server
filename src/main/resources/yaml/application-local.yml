@@ -12,6 +12,7 @@ email:
 
 spring:
   config:
+    import: optional:file:.env[.properties]
     activate:
       on-profile: local
 
