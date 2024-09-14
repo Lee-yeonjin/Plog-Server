@@ -4,8 +4,8 @@ import com.plog.server.plogging.domain.Activity;
 import com.plog.server.trash.domain.Trash;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface TrashRepository extends JpaRepository<Trash, Long> {
-    List<Trash> findByActivity(Activity activity);
+    Optional<Trash> findByActivity(Activity activity);
 }

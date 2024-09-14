@@ -55,6 +55,15 @@ dependencies {
     implementation 'com.google.auth:google-auth-library-oauth2-http:0.26.0'
     implementation 'org.projectlombok:lombok:1.18.24' // 최신 버전으로 변경 가능
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    //aws
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'com.amazonaws:aws-java-sdk-core:1.12.345'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.345'
+
+    // XSS 공격 방지 Jsoup
+    implementation 'org.jsoup:jsoup:1.16.1'
+
 }
 
 tasks.named('test') {

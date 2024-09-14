@@ -4,8 +4,6 @@ import com.plog.server.plogging.domain.Activity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Entity
 @Getter
 @Setter

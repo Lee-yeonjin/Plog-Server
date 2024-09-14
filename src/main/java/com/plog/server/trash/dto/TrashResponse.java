@@ -1,14 +1,14 @@
 package com.plog.server.trash.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TrashResponse {
     private Long trashId;
     private int garbage;
@@ -19,5 +19,5 @@ public class TrashResponse {
     private int glass;
     private int trashSum;
     private LocalDate ploggingDate;
-    private String photo="duswls@naver/cpm";
+    private String photo;
 }
