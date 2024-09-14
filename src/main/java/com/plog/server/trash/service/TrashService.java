@@ -99,6 +99,6 @@ public class TrashService {
     private String getActivityUrl(Activity activity) {
         return Optional.ofNullable(activityPhotoRepository.findByActivity_ActivityId(activity.getActivityId()))
                 .map(clubMainPhoto -> s3UploaderService.generatePresignedGetUrl(clubMainPhoto.getActitityPhotoS3Key()))
-                .orElse(null);
+                .orElse("none");
     }
 }

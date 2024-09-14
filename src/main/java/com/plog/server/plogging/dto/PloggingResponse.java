@@ -22,6 +22,6 @@ public class PloggingResponse {
         this.ploggingDate = activity.getPloggingDate();
         this.ploggingTime = activity.getPloggingTime();
         this.distance = activity.getDistance();
-        this.trash_sum = activity.getTrash().getTrash_sum();
+        this.trash_sum = (activity.getTrash() != null) ? activity.getTrash().getTrash_sum() : 0;
     }
 }
