@@ -30,9 +30,8 @@ public class Trash {
 
     private int trash_sum; // 전체 쓰레기 개수
 
-
-    @OneToOne // 일대일 관계로 수정
-    @JoinColumn(name = "activity_id", nullable = false) // 외래 키 설정
+    @OneToOne
+    @JoinColumn(name = "activity_id", nullable = false)
     private Activity activity;
 
     @PrePersist
