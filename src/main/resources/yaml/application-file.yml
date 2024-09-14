@@ -12,3 +12,7 @@ spring:
 
 file:
   allowed-extensions: jpg,jpeg,png
+
+server:
+  tomcat:
+    max-swallow-size: 30MB
