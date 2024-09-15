@@ -3,12 +3,15 @@ package com.plog.server.trash.service;
 import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.repository.ActivityRepository;
 import com.plog.server.profile.domain.Profile;
+import com.plog.server.rank.service.RankCreationService;
+import com.plog.server.rank.service.RankService;
 import com.plog.server.trash.domain.Trash;
 import com.plog.server.trash.dto.TrashRequest;
 import com.plog.server.trash.dto.TrashResponse;
 import com.plog.server.trash.repository.TrashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class TrashService {
     private final TrashRepository trashRepository;
+    private final RankCreationService rankCreationService;
     private final ActivityRepository activityRepository;
 
     public Trash createTrash(TrashRequest trashRequest, Activity activity, Profile profile) {
@@ -37,7 +41,11 @@ public class TrashService {
                 .activity(activity)
                 .build();
 
-        return trashRepository.save(trash);
+        Trash savedTrash = trashRepository.save(trash); // Trash 저장
+        // Rank 생성
+        rankCreationService.createRank(activity, savedTrash); // Rank 생성
+
+        return savedTrash;
     }
 
     public List<Trash> getAllTrash(Activity activity) {
