@@ -46,7 +46,7 @@ public class Activity {
 
     private LocalDate ploggingDate;
 
-    @OneToOne(mappedBy = "activity", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "activity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Trash trash;
 
     public void setRouteStatus(){
