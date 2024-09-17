@@ -19,14 +19,14 @@ import java.util.UUID;
 public class MyBadgeController {
     private final MyBadgeService myBadgeService;
 
-    //대표 배지 설정
+    //프로필 배지 설정
     @PatchMapping("/{userUUID}/{badgeId}")
     public ResponseEntity<ApiResponse<Void>> updateSelectedBadge(
             @PathVariable UUID userUUID,
             @PathVariable Long badgeId) {
         myBadgeService.setSelectedBadge(userUUID, badgeId);
         // 응답 메시지 생성
-        ApiResponse<Void> response = new ApiResponse<>("대표 배지가 설정되었습니다.");
+        ApiResponse<Void> response = new ApiResponse<>("프로필 배지가 설정되었습니다.");
 
         return ResponseEntity.ok(response);
     }
