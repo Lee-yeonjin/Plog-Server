@@ -22,4 +22,5 @@ public class BadgeService {
 
         return new BadgeResponse(badge.getBadgeId().intValue(), badge.getBadgeGoal(), badge.getCost());
     }
+
 }

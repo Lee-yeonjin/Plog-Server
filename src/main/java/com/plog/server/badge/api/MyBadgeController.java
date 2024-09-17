@@ -1,14 +1,12 @@
 package com.plog.server.badge.api;
 
+import com.google.protobuf.Api;
 import com.plog.server.badge.service.MyBadgeService;
 import com.plog.server.global.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -24,13 +22,17 @@ public class MyBadgeController {
     public ResponseEntity<ApiResponse<Void>> updateSelectedBadge(
             @PathVariable UUID userUUID,
             @PathVariable int badgeId) {
-        myBadgeService.setSelectedBadge(userUUID, badgeId);
-        // 응답 메시지 생성
-        ApiResponse<Void> response = new ApiResponse<>("프로필 배지가 설정되었습니다.");
+        String message = myBadgeService.setSelectedBadge(userUUID, badgeId);
+
+        ApiResponse<Void> response = new ApiResponse<>(message);
 
         return ResponseEntity.ok(response);
     }
 
     //프로필 배지 조회
-
+    @GetMapping("/{uuid}")
+    public ApiResponse<Integer> getMyBadge(@PathVariable UUID uuid){
+        Integer badgeId = myBadgeService.getSelectedBadgeId(uuid);
+        return new ApiResponse<>("프로필 배지", badgeId);
+    }
 }
