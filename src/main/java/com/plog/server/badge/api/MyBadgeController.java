@@ -19,6 +19,7 @@ import java.util.UUID;
 public class MyBadgeController {
     private final MyBadgeService myBadgeService;
 
+    //대표 배지 설정
     @PatchMapping("/{userUUID}/{badgeId}")
     public ResponseEntity<ApiResponse<Void>> updateSelectedBadge(
             @PathVariable UUID userUUID,
