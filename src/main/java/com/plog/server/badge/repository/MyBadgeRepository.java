@@ -13,4 +13,6 @@ public interface MyBadgeRepository extends JpaRepository <MyBadge,Long> {
     Optional<MyBadge> findByProfileAndBadgeBadgeId(Profile profile, Long badgeId);
     @Query("SELECT mb FROM MyBadge mb WHERE mb.profile = :profile AND mb.myBadgeStatus = true")
     List<MyBadge> findMainBadgesByProfile(@Param("profile") Profile profile);
+
+    List<MyBadge> findByProfile(Profile profile);
 }

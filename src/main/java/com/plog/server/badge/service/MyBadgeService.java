@@ -10,8 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -51,5 +53,20 @@ public class MyBadgeService {
         }
         // 배지 ID 반환
         return selectedBadge.getBadgeId().intValue();
+    }
+
+    //사용자가 소유한 배지 목룍 조회
+    public List<Integer> getUserBadgeIds(UUID userUUID) {
+        // 사용자 프로필 조회
+        Profile profile = profileRepository.findByUserUserUUID(userUUID)
+                .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다: " + userUUID));
+
+        // 해당 사용자가 소유한 배지 목록 조회
+        List<MyBadge> myBadges = myBadgeRepository.findByProfile(profile);
+
+        // 배지 ID 목록 추출 및 반환
+        return myBadges.stream()
+                .map(myBadge -> myBadge.getBadge().getBadgeId().intValue())
+                .collect(Collectors.toList());
     }
 }

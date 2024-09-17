@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -30,9 +31,16 @@ public class MyBadgeController {
     }
 
     //프로필 배지 조회
-    @GetMapping("/{uuid}")
+    @GetMapping("/{uuid}/profile")
     public ApiResponse<Integer> getMyBadge(@PathVariable UUID uuid){
         Integer badgeId = myBadgeService.getSelectedBadgeId(uuid);
         return new ApiResponse<>("프로필 배지", badgeId);
+    }
+
+    //소유한 배지 목록 조회
+    @GetMapping("/{uuid}")
+    public ApiResponse<List<Integer>> getMyBadgeList(@PathVariable UUID uuid){
+        List<Integer> badgeIds = myBadgeService.getUserBadgeIds(uuid);
+        return new ApiResponse<>("소유한 배지 목록 조회 완료", badgeIds);
     }
 }
