@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class BadgeService {
     private final BadgeRepository badgeRepository;
 
-    public BadgeResponse getBadgeCondition(Long badgeId) {
-        Badge badge = badgeRepository.findById(badgeId)
+    public BadgeResponse getBadgeCondition(int badgeId) {
+        Badge badge = badgeRepository.findById((long)badgeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 배지를 찾을 수 없습니다."));
 
         return new BadgeResponse(badge.getBadgeId().intValue(), badge.getBadgeGoal(), badge.getCost());

@@ -18,7 +18,7 @@ public class BadgeController {
     private final BadgeService badgeService;
 
     @GetMapping("/{badgeId}/conditions")
-    public ApiResponse<BadgeResponse> getBadgeCondition(@PathVariable Long badgeId){
+    public ApiResponse<BadgeResponse> getBadgeCondition(@PathVariable int badgeId){
         BadgeResponse badgeResponse = badgeService.getBadgeCondition(badgeId);
 
         return new ApiResponse<>("배지 해금 조건 반환",badgeResponse);
