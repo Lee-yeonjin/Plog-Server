@@ -5,10 +5,9 @@ import com.plog.server.badge.service.BadgeService;
 import com.plog.server.global.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,4 +23,10 @@ public class BadgeController {
         return new ApiResponse<>("배지 해금 조건 반환",badgeResponse);
     }
 
+    // 배지 해금 조건 체크
+    @PostMapping("/{uuid}/{badgeId}/check")
+    public ApiResponse<String> checkBadgeConditions(@PathVariable UUID uuid, @PathVariable int badgeId) {
+        String result = badgeService.checkBadgeConditions(uuid, badgeId);
+        return new ApiResponse<>("배지 체크", result);
+    }
 }
