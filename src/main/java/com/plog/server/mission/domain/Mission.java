@@ -1,13 +1,12 @@
 package com.plog.server.mission.domain;
 
+import com.plog.server.profile.domain.Profile;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -19,9 +18,5 @@ public class Mission {
 
     Integer missionCoin;
 
-    String mission1;
-
-    String mission2;
-
-    String mission3;
+    String mission;
 }

@@ -20,7 +20,7 @@ import java.util.List;
 public class RankScheduled {
     private final RankRepository rankRepository;
 
-    @Scheduled(cron = "0 17 1 * * MON")
+    @Scheduled(cron = "0 0 0 * * SUN")
     @Transactional
     public void resetRankings() {
         log.info("Resetting rankings...");

@@ -1,10 +1,12 @@
 package com.plog.server.user.api;
 
 import com.plog.server.global.ApiResponse;
-import com.plog.server.profile.service.ProfileService;
 import com.plog.server.user.domain.User;
 import com.plog.server.user.domain.UserTemp;
-import com.plog.server.user.dto.*;
+import com.plog.server.user.dto.LoginRequest;
+import com.plog.server.user.dto.LoginResponse;
+import com.plog.server.user.dto.SignUpFinishRequest;
+import com.plog.server.user.dto.SignUpRequest;
 import com.plog.server.user.service.EmailService;
 import com.plog.server.user.service.UserService;
 import jakarta.mail.MessagingException;
@@ -15,7 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,18 +27,14 @@ import java.util.*;
 public class UserController {
     private final UserService userService;
     private final EmailService emailService;
-    private final ProfileService profileService;
 
     @PostMapping("/signin")
     public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
         try {
             LoginResponse loginResponse = userService.login(loginRequest);
             session.setAttribute("user", loginResponse);
-
             return ResponseEntity.ok(new ApiResponse("로그인 성공", loginResponse));
         } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(new ApiResponse("서버 오류: " + e.getMessage()));
             return ResponseEntity.ok(new ApiResponse("로그인 실패", null));
         }
     }
