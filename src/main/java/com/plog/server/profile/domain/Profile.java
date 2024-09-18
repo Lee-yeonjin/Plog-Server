@@ -56,7 +56,6 @@ public class Profile {
     public void setIncreaseCoins(Integer coin) {
             this.totalCoin += coin;
     }
-
     @PrePersist
     protected void onCreate() {
         if (this.totalDistance == null) this.totalDistance = 0.0;
@@ -65,5 +64,8 @@ public class Profile {
         if (this.totalCoin == null) this.totalCoin = 0;
         this.userMembership = false;
         this.ploggingStatus = false;
+    }
+    public void setTotalCoin(int totalCoin) {
+        this.totalCoin = totalCoin;
     }
 }

@@ -15,4 +15,5 @@ public interface ActivityRepository extends JpaRepository<Activity,Long> {
     List<Activity> findByRouteStatus(boolean b);
     List<Activity> findByProfileAndRouteStatus(Profile profile, Boolean routeStatus);
     Optional<Activity> findByActivityIdAndProfileUserUserUUID(Long activityId, UUID uuid);
+    int countByProfileAndRouteStatus(Profile profile, boolean routeStatus);
 }
