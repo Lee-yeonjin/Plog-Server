@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -130,6 +129,40 @@ public class BadgeService {
         }
 
         return totalCount;
+    }
+
+    //배지 구매
+    @Transactional
+    public String purchaseBadge(UUID uuid, int badgeId) {
+        // 사용자 프로필 조회
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다: " + uuid));
+
+        // 배지 조회
+        Badge badge = badgeRepository.findById((long) badgeId)
+                .orElseThrow(() -> new IllegalArgumentException("배지를 찾을 수 없습니다: " + badgeId));
+
+        // 배지 가격 확인
+        int badgeCost = badge.getCost();
+
+        // 사용자 코인 확인
+        if (profile.getTotalCoin() < badgeCost) {
+            return "코인이 부족합니다.";
+        }
+
+        // 배지 구매 처리
+        profile.setTotalCoin(profile.getTotalCoin() - badgeCost);
+        profileRepository.save(profile);
+
+        // 배지 저장 및 활성화
+        MyBadge newMyBadge = MyBadge.builder()
+                .profile(profile)
+                .badge(badge)
+                .myBadgeStatus(false)
+                .build();
+        myBadgeRepository.save(newMyBadge);
+
+        return "배지를 성공적으로 구매하였습니다.";
     }
 
 }
