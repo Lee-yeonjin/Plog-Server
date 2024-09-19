@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -23,13 +24,12 @@ public class BadgeController {
         return new ApiResponse<>("배지 해금 조건 반환",badgeResponse);
     }
 
-    // 배지 해금 조건 체크
-    @PostMapping("/{uuid}/{badgeId}/check")
-    public ApiResponse<String> checkBadgeConditions(@PathVariable UUID uuid, @PathVariable int badgeId) {
-        String result = badgeService.checkBadgeConditions(uuid, badgeId);
-        return new ApiResponse<>("배지 체크", result);
+    //배지 해금
+    @PostMapping("/{uuid}")
+    public ApiResponse<List<Integer>> checkAndUnlockBadges(@PathVariable UUID uuid){
+        List<Integer> badges = badgeService.checkAndUnlockBadges(uuid);
+        return new ApiResponse<>("소유한 배지 목록",badges);
     }
-
     //배지 구매
     @PostMapping("/{uuid}/{badgeId}/purchase")
     public ApiResponse<String> purchaseBadge(@PathVariable UUID uuid, @PathVariable int badgeId) {

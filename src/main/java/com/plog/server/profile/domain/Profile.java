@@ -45,16 +45,6 @@ public class Profile {
     @JoinColumn(name = "badge_id")
     private Badge badge;
 
-    public void setSelectedBadge(Badge badge) {
-        this.badge = badge;
-    }
-    public void setPloggingStatus(boolean b) {
-        this.ploggingStatus = b;
-    }
-    public void setIncreaseCoins(Integer coin) {
-            this.totalCoin += coin;
-    }
-    public void setUserMembership(boolean b){this.userMembership = b; }
     @PrePersist
     protected void onCreate() {
         if (this.totalDistance == null) this.totalDistance = 0.0;
@@ -64,7 +54,17 @@ public class Profile {
         this.userMembership = false;
         this.ploggingStatus = false;
     }
-    public void setTotalCoin(int totalCoin) {
-        this.totalCoin = totalCoin;
+    public void setTotalCoin(int totalCoin) { this.totalCoin = totalCoin; }
+    public void addToTotalDistance(Double distance) { this.totalDistance += distance; }
+    public void addToTotalTime(Integer time) { this.totalTime += time; }
+    public void setSelectedBadge(Badge badge) {
+        this.badge = badge;
     }
+    public void setPloggingStatus(boolean b) {
+        this.ploggingStatus = b;
+    }
+    public void setIncreaseCoins(Integer coin) {
+        this.totalCoin += coin;
+    }
+    public void setUserMembership(boolean b){this.userMembership = b; }
 }

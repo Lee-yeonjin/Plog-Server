@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -35,40 +36,52 @@ public class BadgeService {
         return new BadgeResponse(badge.getBadgeId().intValue(), badge.getBadgeGoal(), badge.getCost());
     }
 
-    //배지 해금
+    //배지 해금여부 체크 후 해금
     @Transactional
-    public String checkBadgeConditions(UUID uuid, int badgeId) {
+    public List<Integer> checkAndUnlockBadges(UUID uuid) {
         // 사용자 프로필 조회
         Profile profile = profileRepository.findByUserUserUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다: " + uuid));
 
-        // 배지 조회
-        Badge badge = badgeRepository.findById((long) badgeId)
-                .orElseThrow(() -> new IllegalArgumentException("배지가 없습니다: " + badgeId));
+        // 사용자가 소유한 배지 ID 목록 조회
+        List<MyBadge> ownedBadges = myBadgeRepository.findBadgeIdsByProfile(profile);
 
-        // 배지 해금 조건 체크
-        boolean isEligible = checkConditions(profile, badgeId);
+        List<Badge> allBadges = badgeRepository.findAll();
 
-        if (isEligible) {
-            // 배지 생성 및 활성화
-            MyBadge newMyBadge = MyBadge.builder()
-                    .profile(profile)
-                    .badge(badge)
-                    .build();
-            myBadgeRepository.save(newMyBadge);
+        // 사용자가 소유하지 않은 배지 목록 필터링
+        List<Badge> unownedBadges = allBadges.stream()
+                .filter(badge -> ownedBadges.stream()
+                        .noneMatch(ownedBadge -> ownedBadge.getBadge().getBadgeId().equals(badge.getBadgeId())))
+                .collect(Collectors.toList());
 
-            return "배지가 성공적으로 해금되었습니다.";
-        } else {
-            return "조건을 충족하지 않습니다.";
+        // 소유하지 않은 배지들에 대해 해금 여부 체크
+        for (Badge badge : unownedBadges) {
+            boolean isEligible = checkConditions(profile, badge.getBadgeId().intValue());
+
+            if (isEligible) {
+                // 배지 생성 및 활성화
+                MyBadge newMyBadge = MyBadge.builder()
+                        .profile(profile)
+                        .badge(badge)
+                        .build();
+                myBadgeRepository.save(newMyBadge);
+            }
         }
+        // 해당 사용자가 소유한 배지 목록 조회
+        List<MyBadge> myBadges = myBadgeRepository.findByProfile(profile);
+
+        // 배지 ID 목록 추출 및 반환
+        return myBadges.stream()
+                .map(myBadge -> myBadge.getBadge().getBadgeId().intValue())
+                .collect(Collectors.toList());
     }
 
     private boolean checkConditions(Profile profile, int badgeId) {
         switch (badgeId) {
             case 2: // "사자 : 플로깅 50시간 달성"
-                return profile.getTotalTime() >= 50;
+                return profile.getTotalTime() >= 50 * 3600;
             case 3: // "북극곰 : 플로깅 100시간 달성"
-                return profile.getTotalTime() >= 100;
+                return profile.getTotalTime() >= 100 * 3600;
             case 4: // "황새 : 코인 1000000개 획득"
                 return profile.getTotalCoin() >= 1000000;
             case 5: // "작은발톱수달 : 달린거리 50km 달성"
@@ -162,5 +175,4 @@ public class BadgeService {
 
         return "배지를 성공적으로 구매하였습니다.";
     }
-
 }

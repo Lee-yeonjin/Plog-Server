@@ -16,4 +16,5 @@ public interface MyBadgeRepository extends JpaRepository <MyBadge,Long> {
 //    List<MyBadge> findMainBadgesByProfile(@Param("profile") Profile profile);
     List<MyBadge> findByProfile(Profile profile);
     Optional<MyBadge> findByProfileAndBadge(Profile topProfile, Badge firstPlaceBadge);
+    List<MyBadge> findBadgeIdsByProfile(Profile profile);
 }
