@@ -2,9 +2,14 @@ package com.plog.server.mission.service;
 
 import com.plog.server.mission.domain.Mission;
 import com.plog.server.mission.domain.UserMission;
+import com.plog.server.mission.dto.MissionResponse;
 import com.plog.server.mission.repository.MissionRepository;
 import com.plog.server.mission.repository.UserMissionRepository;
+import com.plog.server.plogging.service.ActivityService;
+import com.plog.server.post.service.PostService;
 import com.plog.server.profile.domain.Profile;
+import com.plog.server.profile.repository.ProfileRepository;
+import com.plog.server.trash.service.TrashService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,9 +26,13 @@ import java.util.stream.Collectors;
 public class MissionService {
     private final UserMissionRepository userMissionRepository;
     private final MissionRepository missionRepository;
+    private final ProfileRepository profileRepository;
+    private final ActivityService activityService;
+    private final PostService postService;
+    private final TrashService  trashService;
 
     // 미션 정보 불러오기
-    public List<Mission> getDailyQuests(Profile profile) {
+    public List<MissionResponse> getDailyQuests(Profile profile) {
         List<UserMission> userMissions = userMissionRepository.findByProfile(profile);
         LocalDateTime now = LocalDateTime.now();
         boolean isNewDay = userMissions.isEmpty() || userMissions.stream()
@@ -32,23 +42,35 @@ public class MissionService {
             List<Mission> allMissions = missionRepository.findAll();
             Collections.shuffle(allMissions);
 
-            int missionCount = profile.isUserMembership() ? 6 : 3; // userMembership이 true면 6개, 아니면 3개
+            int missionCount = profile.isUserMembership() ? 6 : 3;
             List<Mission> selectedMissions = allMissions.stream().limit(missionCount).collect(Collectors.toList());
 
             saveUserMissions(profile, selectedMissions, now); // 미션 저장 메서드 호출
 
-            return selectedMissions; // 원래 코인 값으로 미션 목록 반환
-        } else {
-            // 유저 미션에서 미션 가져오기
-            List<Mission> missions = userMissions.stream()
-                    .map(userMission -> {
-                        Mission mission = userMission.getMission();
-                        mission.setMissionCoin(userMission.getMissionCoin()); // 유저 미션의 코인 값 사용
-                        return mission;
+            return selectedMissions.stream()
+                    .map(mission -> {
+                        UserMission userMission = new UserMission();
+                        userMission.setProfile(profile);
+                        userMission.setMission(mission); // Mission 객체를 설정
+                        userMission.setMissionCoin(mission.getMissionCoin());
+                        userMission.setCreatedDay(now.toLocalDate());
+                        userMission.setFinish(false); // 기본적으로 false로 설정
+
+                        int missionId = userMission.getMission().getMissionId().intValue();
+
+                        return new MissionResponse("미션 조회 성공", missionId, userMission.getMissionCoin(), userMission.isFinish());
                     })
                     .collect(Collectors.toList());
+        } else {
+            return userMissions.stream()
+                    .map(userMission -> {
+                        int missionId = userMission.getMission().getMissionId().intValue();
 
-            return missions; // 유저 미션 테이블에서 가져온 미션 목록 반환
+                        String message = userMission.getMission().getMission();
+
+                        return new MissionResponse(message, missionId, userMission.getMissionCoin(), userMission.isFinish());
+                    })
+                    .collect(Collectors.toList());
         }
     }
 
@@ -99,6 +121,53 @@ public class MissionService {
             userMissionRepository.save(userMission);
         }
     }
+
+    public void completeMission(Profile profile, Mission mission) {
+        UserMission userMission = userMissionRepository.findByProfileAndMission(profile, mission)
+                .orElseThrow(() -> new IllegalArgumentException("UserMission not found"));
+
+        // 미션의 코인을 프로필의 총 코인에 추가
+        profile.setIncreaseCoins(userMission.getMissionCoin());
+
+        // 미션 상태를 완료로 변경
+        userMission.setFinish(true); // 성공 상태 업데이트
+        userMissionRepository.save(userMission); // UserMission 저장
+
+        // 업데이트된 프로필 저장
+        profileRepository.save(profile);
+    }
+
+    // 미션 ID로 미션 찾기
+    public Optional<Mission> findMissionById(Long missionId) {
+        return missionRepository.findById(missionId);
+    }
+
+    // 미션 성공 여부 확인
+    public boolean checkMissionSuccess(Profile profile, Mission mission) {
+        switch (mission.getMissionId().intValue()) { // 미션 ID를 int로 변환하여 사용
+            case 1: // 오늘 플로깅 1회 하기
+                return activityService.hasPloggedToday(profile);
+            case 2: // 플라스틱 15개 이상 줍기
+                return trashService.hasCollectedPlasticToday(profile, 15);
+            case 3: // 나만의 루트 만들기
+                return activityService.hasCreatedRouteToday(profile);
+            case 4: // 오늘 커뮤니티에 글 작성
+                return postService.checkPostsByProfileToday(profile);
+            case 5: // 일반쓰레기 20개 줍기
+                return trashService.hasCollectedGarbageToday(profile,20);
+//            case 6: // 쓰레기통 신고하기
+//                return trashService.hasCollectedGarbageToday(profile,20);
+            case 7: // 플로깅 후 사진 업로드 하기
+                return activityService.hasUploadedPhoto(profile);
+            case 8: // 3km 이상 활동하기
+                return activityService.hasPloggedMoreThan3KmToday(profile);
+            case 9: // 30뷴 이상 활동하기
+                return activityService.hasPloggedMoreThan30Minutes(profile);
+            default:
+                return false; // 다른 미션에 대해서는 기본적으로 실패로 처리
+        }
+    }
+
 
     // 리롤버튼
     public void rerollUserMissions(Profile profile) {

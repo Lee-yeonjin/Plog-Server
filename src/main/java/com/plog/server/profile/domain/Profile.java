@@ -63,7 +63,7 @@ public class Profile {
         if (this.totalTrash == null) this.totalTrash = 0;
         if (this.totalTime == null) this.totalTime = 0.0;
         if (this.totalCoin == null) this.totalCoin = 0;
-//        this.userMembership = false;
+        this.userMembership = false;
         this.ploggingStatus = false;
     }
 }

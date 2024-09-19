@@ -1,8 +1,10 @@
 package com.plog.server.plogging.service;
 
 import com.plog.server.plogging.domain.Activity;
+import com.plog.server.plogging.domain.ActivityPhoto;
 import com.plog.server.plogging.domain.Location;
 import com.plog.server.plogging.dto.*;
+import com.plog.server.plogging.repository.ActivityPhotoRepository;
 import com.plog.server.plogging.repository.ActivityRepository;
 import com.plog.server.plogging.repository.LocationRepository;
 import com.plog.server.profile.domain.Profile;
@@ -26,6 +28,67 @@ public class ActivityService {
     private final LocationRepository locationRepository;
     private final GeocodeService geocodeService;
     private final ProfileRepository profileRepository;
+    private final ActivityPhotoRepository activityPhotoRepository;
+
+    // 미션 - 오늘 플로깅 했는지 확인
+    public boolean hasPloggedToday(Profile profile) {
+        List<Activity> activities = activityRepository.findByProfileAndPloggingDate(profile, LocalDate.now());
+        return !activities.isEmpty();
+    }
+
+    // 미션 - 30분 이상 플로깅 활동을 했는지
+     public boolean hasPloggedMoreThan30Minutes(Profile profile) {
+        List<Activity> activities = activityRepository.findByProfileAndPloggingDate(profile, LocalDate.now());
+
+        for (Activity activity : activities) {
+            if (activity.getPloggingTime() >= 1800) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 미션 - 3km 이상 활동하기
+    public boolean hasPloggedMoreThan3KmToday(Profile profile) {
+        List<Activity> activities = activityRepository.findByProfileAndPloggingDate(profile, LocalDate.now());
+
+        // 3km 이상 활동한 기록이 있는지 확인
+        for (Activity activity : activities) {
+            if (activity.getDistance() != null && activity.getDistance() >= 3.0) {
+                return true; // 3km 이상 활동한 경우
+            }
+        }
+        return false; // 3km 이상 활동한 기록이 없는 경우
+    }
+
+    // 미션 - 나만의 루트 등록
+    public boolean hasCreatedRouteToday(Profile profile) {
+        // Activity 테이블에서 오늘 날짜의 활동을 가져옴
+        List<Activity> activities = activityRepository.findByProfileAndPloggingDate(profile, LocalDate.now());
+
+        // routeStatus가 TRUE인 활동이 있는지 확인
+        for (Activity activity : activities) {
+            if (activity.getRouteStatus()) { // routeStatus가 TRUE인지 확인
+                return true; // 미션 성공
+            }
+        }
+        return false; // 미션 실패
+    }
+
+    // 플로깅 후 사진이 업르도 되었는지 확인
+    public boolean hasUploadedPhoto(Profile profile) {
+        // 오늘 날짜의 플로깅 활동을 가져오기
+        List<Activity> activities = activityRepository.findByProfileAndPloggingDate(profile, LocalDate.now());
+
+        // 활동이 존재하는 경우, 각 활동에 대해 사진이 있는지 확인
+        for (Activity activity : activities) {
+            ActivityPhoto photo = activityPhotoRepository.findByActivity_ActivityId(activity.getActivityId());
+            if (photo != null) {
+                return true; // 사진이 존재함
+            }
+        }
+        return false; // 사진이 존재하지 않음
+    }
 
     @Transactional
     public Profile startActivity(UUID uuid) {

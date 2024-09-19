@@ -29,4 +29,11 @@ public class UserMission {
     private LocalDate createdDay;
 
     private Integer missionCoin;
+
+    private boolean isFinish;
+
+    @PrePersist
+    protected void onCreate() {
+        this.isFinish = false;
+    }
 }

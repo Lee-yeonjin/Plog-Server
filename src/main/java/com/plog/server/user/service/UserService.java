@@ -55,9 +55,11 @@ public class UserService {
 
         Optional<Profile> profileOptional = profileService.getProfileByUserUUID(user.getUserUUID());
         String userNickname;
+        boolean userMembership;
 
         if (profileOptional.isPresent()) {
             userNickname = profileOptional.get().getUserNickname();
+            userMembership = profileOptional.get().isUserMembership();
             fcmService.saveOrUpdateFcm(profileOptional.get(), deviceToken);
 
             // UserMission이 존재하지 않을 때만 생성
@@ -69,7 +71,7 @@ public class UserService {
             throw new IllegalArgumentException("프로필을 찾을 수 없습니다.");
         }
 
-        return new LoginResponse(user.getUserUUID(), userNickname);
+        return new LoginResponse(user.getUserUUID(), userNickname, userMembership);
     }
 
     //임시 회원 가입

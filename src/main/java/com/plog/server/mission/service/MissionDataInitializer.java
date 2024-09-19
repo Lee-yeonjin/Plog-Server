@@ -22,13 +22,13 @@ public class MissionDataInitializer implements CommandLineRunner {
         List<Mission> missions = Arrays.asList(
                 Mission.builder().missionCoin(1).mission("오늘 플로깅 1회 하기").build(),
                 Mission.builder().missionCoin(2).mission("플라스틱 15개 줍기").build(),
-                Mission.builder().missionCoin(3).mission("나만의 루트 만들기").build(),
+                Mission.builder().missionCoin(2).mission("나만의 루트 만들기").build(),
                 Mission.builder().missionCoin(1).mission("커뮤니티 글 올리기").build(),
                 Mission.builder().missionCoin(3).mission("일반쓰레기 20개 줍기").build(),
-                Mission.builder().missionCoin(2).mission("프로필 배지 변경하기").build(),
+                Mission.builder().missionCoin(2).mission("쓰레기통 신고하기").build(),
                 Mission.builder().missionCoin(3).mission("플로깅 후 사진 업로드하기").build(),
-                Mission.builder().missionCoin(2).mission("지역 플로깅 모임 참여하기").build(),
-                Mission.builder().missionCoin(1).mission("아몰랑").build()
+                Mission.builder().missionCoin(3).mission("3km 이상 활동하기").build(),
+                Mission.builder().missionCoin(3).mission("30분 이상 플로깅하기").build()
         );
 
         for (Mission mission : missions) {

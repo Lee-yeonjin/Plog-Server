@@ -23,11 +23,11 @@ public class MissionController {
     private final MissionService missionService; // DailyQuestService 주입
 
     @GetMapping("/{uuid}/dailyquest")
-    public ResponseEntity<ApiResponse> inquireRank(@PathVariable UUID uuid) {
+    public ResponseEntity<ApiResponse> inquireMission(@PathVariable UUID uuid) {
         Profile profile = profileRepository.findByUserUserUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
 
-        List<Mission> missions = missionService.getDailyQuests(profile);
+        List<MissionResponse> missions = missionService.getDailyQuests(profile);
 
         return ResponseEntity.ok(new ApiResponse("미션 조회 성공", missions));
     }
@@ -39,8 +39,28 @@ public class MissionController {
 
         missionService.rerollUserMissions(profile);
 
-        List<Mission> dailyQuests = missionService.getDailyQuests(profile);
+        List<MissionResponse> dailyQuests = missionService.getDailyQuests(profile);
         return ResponseEntity.ok(new ApiResponse("다시 돌리기 성공", dailyQuests));
+    }
+
+    @PostMapping("/{uuid}/{missionid}/successful")
+    public ResponseEntity<ApiResponse> successful(@PathVariable UUID uuid, @PathVariable Integer missionid) {
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
+
+        Long missionId_Long = missionid.longValue();
+
+        Mission mission = missionService.findMissionById(missionId_Long)
+                .orElseThrow(() -> new IllegalArgumentException("미션을 찾을 수 없습니다"));
+
+        boolean isSuccess = missionService.checkMissionSuccess(profile, mission);
+
+        if (isSuccess) {
+            missionService.completeMission(profile, mission);
+            return ResponseEntity.ok(new ApiResponse("미션 성공", null));
+        } else {
+            return ResponseEntity.ok(new ApiResponse("미션 실패", null));
+        }
     }
 }
 
