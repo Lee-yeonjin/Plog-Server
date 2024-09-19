@@ -12,6 +12,7 @@ import com.plog.server.profile.repository.ProfileRepository;
 import com.plog.server.trash.service.TrashService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ public class MissionService {
     private final ActivityService activityService;
     private final PostService postService;
     private final TrashService  trashService;
+    private final DataSourcePoolMetadataProvidersConfiguration dataSourcePoolMetadataProvidersConfiguration;
 
     // 미션 정보 불러오기
     public List<MissionResponse> getDailyQuests(Profile profile) {
@@ -155,8 +157,16 @@ public class MissionService {
                 return postService.checkPostsByProfileToday(profile);
             case 5: // 일반쓰레기 20개 줍기
                 return trashService.hasCollectedGarbageToday(profile,20);
-//            case 6: // 쓰레기통 신고하기
-//                return trashService.hasCollectedGarbageToday(profile,20);
+            case 6: // 활동시간 최고기록 갱신
+                Integer todayDuration = activityService.getTodayBestPloggingDuration(profile); // 오늘 플로깅 시간
+                Integer previousBest = activityService.getPreviousBestPloggingDuration(profile); // 이전 최고 기록
+
+                if (todayDuration > previousBest) {
+                    updateMissionStatus(profile, mission.getMissionId(), true); // 성공 업데이트
+                    return true;
+                } else {
+                    return false;
+                }
             case 7: // 플로깅 후 사진 업로드 하기
                 return activityService.hasUploadedPhoto(profile);
             case 8: // 3km 이상 활동하기
@@ -168,6 +178,13 @@ public class MissionService {
         }
     }
 
+    public void updateMissionStatus(Profile profile, Long missionId, boolean isFinish) {
+        UserMission userMission = userMissionRepository.findByProfileAndMission_MissionId(profile, missionId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 미션을 찾을 수 없습니다."));
+
+        userMission.setFinish(isFinish);
+        userMissionRepository.save(userMission);
+    }
 
     // 리롤버튼
     public void rerollUserMissions(Profile profile) {

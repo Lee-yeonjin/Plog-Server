@@ -128,7 +128,7 @@ public class UserService {
                 .userNickname(userTemp.getTempNickname())
                 .totalCoin(0)
                 .totalDistance(0.0)
-                .totalTime(0.0)
+                .totalTime(0)
                 .totalTrash(0)
                 .badge(defaultBadge)
                 .user(user)

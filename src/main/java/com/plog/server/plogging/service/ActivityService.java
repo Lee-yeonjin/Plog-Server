@@ -1,5 +1,6 @@
 package com.plog.server.plogging.service;
 
+import com.plog.server.mission.repository.UserMissionRepository;
 import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.domain.ActivityPhoto;
 import com.plog.server.plogging.domain.Location;
@@ -10,13 +11,14 @@ import com.plog.server.plogging.repository.LocationRepository;
 import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.repository.ProfileRepository;
 import com.plog.server.trash.domain.Trash;
-import com.plog.server.trash.repository.TrashRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +32,26 @@ public class ActivityService {
     private final ProfileRepository profileRepository;
     private final ActivityPhotoRepository activityPhotoRepository;
 
+    // 미션 - 최고기록 갱신 오늘 플로깅 시간 조회
+    public Integer getTodayBestPloggingDuration(Profile profile) {
+        LocalDate today = LocalDate.now();
+        return activityRepository.findByProfileAndPloggingDate(profile, today)
+                .stream()
+                .mapToInt(Activity::getPloggingTime) // 각 활동의 지속 시간 가져오기
+                .max() // 가장 큰 값 반환
+                .orElse(0); // 없을 경우 기본값 0
+    }
+
+    // 이전의 최고 기록 조회 (오늘 기록을 제외한)
+    public Integer getPreviousBestPloggingDuration(Profile profile) {
+        LocalDate today = LocalDate.now(); // 오늘 날짜
+        return activityRepository.findByProfile(profile).stream()
+                .filter(activity -> !activity.getPloggingDate().equals(today)) // 오늘 날짜 제외
+                .mapToInt(Activity::getPloggingTime)
+                .max() // 최대값 반환
+                .orElse(0); // 없을 경우 기본값 0
+    }
+
     // 미션 - 오늘 플로깅 했는지 확인
     public boolean hasPloggedToday(Profile profile) {
         List<Activity> activities = activityRepository.findByProfileAndPloggingDate(profile, LocalDate.now());
@@ -37,7 +59,7 @@ public class ActivityService {
     }
 
     // 미션 - 30분 이상 플로깅 활동을 했는지
-     public boolean hasPloggedMoreThan30Minutes(Profile profile) {
+    public boolean hasPloggedMoreThan30Minutes(Profile profile) {
         List<Activity> activities = activityRepository.findByProfileAndPloggingDate(profile, LocalDate.now());
 
         for (Activity activity : activities) {

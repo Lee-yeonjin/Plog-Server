@@ -6,6 +6,7 @@ import com.plog.server.post.repository.FcmRepository;
 import com.plog.server.post.service.FcmService;
 import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.dto.ActiveProfileResponse;
+import com.plog.server.profile.dto.ProfileResponse;
 import com.plog.server.profile.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,14 +38,15 @@ public class ProfileService {
         return profileRepository.findByUserUserUUID(userUUID);
     }
 
-    public NoticeRequest getMypage(Profile profile) {
-        Fcm fcm = fcmRepository.findByProfile(profile)
-                .orElseThrow(() -> new IllegalArgumentException("FCM 정보가 없습니다."));
-
-        NoticeRequest noticeRequest = fcmService.getNoticeRequestByProfileId(profile);
-//        noticeRequest.setNotificationEnabled(fcm.isNotificationEnabled());
-//        noticeRequest.setLocation(fcm.getLocation());
-
-        return noticeRequest;
+    public ProfileResponse getMypage(Profile profile) {
+        return new ProfileResponse(
+                profile.getUserNickname(),
+                profile.getTotalCoin(),
+                profile.getBadge() != null ? profile.getBadge().getBadgeId().intValue() : null,// 배지 ID 추가
+                profile.getTotalDistance(),
+                profile.getTotalTime(),
+                profile.getTotalTrash()
+        );
     }
+
 }

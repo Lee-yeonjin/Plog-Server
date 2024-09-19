@@ -54,7 +54,6 @@ public class BadgeService {
             MyBadge newMyBadge = MyBadge.builder()
                     .profile(profile)
                     .badge(badge)
-                    .myBadgeStatus(false)
                     .build();
             myBadgeRepository.save(newMyBadge);
 
@@ -158,7 +157,6 @@ public class BadgeService {
         MyBadge newMyBadge = MyBadge.builder()
                 .profile(profile)
                 .badge(badge)
-                .myBadgeStatus(false)
                 .build();
         myBadgeRepository.save(newMyBadge);
 

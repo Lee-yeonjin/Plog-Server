@@ -57,7 +57,6 @@ public class RankScheduled {
                 .orElseGet(() -> MyBadge.builder()
                         .profile(topProfile)
                         .badge(firstPlaceBadge)
-                        .myBadgeStatus(true)
                         .build());
         myBadgeRepository.save(myBadge);
 

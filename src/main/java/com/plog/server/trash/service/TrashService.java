@@ -101,6 +101,9 @@ public class TrashService {
         // Rank 생성
         rankCreationService.createRank(activity, savedTrash); // Rank 생성
 
+        profile.setTotalTrash(profile.getTotalTrash() + savedTrash.getTrash_sum());
+        profileRepository.save(profile);
+
         return s3FileResponse;
     }
 

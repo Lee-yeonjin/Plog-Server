@@ -4,15 +4,13 @@ import com.plog.server.badge.domain.Badge;
 import com.plog.server.badge.domain.MyBadge;
 import com.plog.server.user.domain.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -28,7 +26,7 @@ public class Profile {
 
     Integer totalTrash;
 
-    Double totalTime;
+    Integer totalTime;
 
     Integer totalCoin;
 
@@ -56,11 +54,12 @@ public class Profile {
     public void setIncreaseCoins(Integer coin) {
             this.totalCoin += coin;
     }
+    public void setUserMembership(boolean b){this.userMembership = b; }
     @PrePersist
     protected void onCreate() {
         if (this.totalDistance == null) this.totalDistance = 0.0;
         if (this.totalTrash == null) this.totalTrash = 0;
-        if (this.totalTime == null) this.totalTime = 0.0;
+        if (this.totalTime == null) this.totalTime = 0;
         if (this.totalCoin == null) this.totalCoin = 0;
         this.userMembership = false;
         this.ploggingStatus = false;
