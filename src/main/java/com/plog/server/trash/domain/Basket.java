@@ -20,4 +20,6 @@ public class Basket {
     private double basketLatitude;
 
     private double basketLongitude;
+
+    private boolean basketIsPresent;
 }
