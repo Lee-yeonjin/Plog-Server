@@ -91,15 +91,9 @@ public class RankService {
         return responseData;
     }
 
-
+    // 배지 ID를 프로필에서 직접 조회하는 메서드
     private int getActiveBadgeId(Profile profile) {
-        // 주어진 프로필에 대한 활성화된 배지 ID 조회
-        List<MyBadge> activeBadges = myBadgeRepository.findMainBadgesByProfile(profile);
-
-        return activeBadges.stream()
-                .filter(MyBadge::myBadgeStatus) // 배지가 활성화된 경우만 필터링
-                .findFirst()
-                .map(myBadge -> myBadge.getBadge().getBadgeId().intValue())
-                .orElse(1); // 기본값 1
+        // 프로필에서 배지 ID를 가져옵니다.
+        return profile.getBadge() != null ? profile.getBadge().getBadgeId().intValue() : 1; // 기본값 1
     }
 }

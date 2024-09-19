@@ -38,7 +38,7 @@ public class DummyData {
     private final PostRepository postRepository;
     private final GeocodeService geocodeService;
 
-    double totalTimeInSeconds = 50 * 3600 - 5;
+    Integer totalTimeInSeconds = 50 * 3600 - 5;
 
     @PostConstruct
     public void init (){
@@ -72,7 +72,6 @@ public class DummyData {
         MyBadge myBadge = MyBadge.builder()
                 .badge(badge)
                 .profile(profile)
-                .myBadgeStatus(true)
                 .build();
         myBadgeRepository.save(myBadge);
 
@@ -163,7 +162,7 @@ public class DummyData {
                 .user(user2)
                 .badge(badge)
                 .totalTrash(30)
-                .totalTime(30.0)
+                .totalTime(30)
                 .totalCoin(30)
                 .totalDistance(30.0)
                 .userMembership(false)
@@ -174,7 +173,6 @@ public class DummyData {
         MyBadge myBadge2 = MyBadge.builder()
                 .badge(badge)
                 .profile(profile2)
-                .myBadgeStatus(true)
                 .build();
         myBadgeRepository.save(myBadge2);
 
@@ -191,7 +189,7 @@ public class DummyData {
                 .user(user3)
                 .badge(badge)
                 .totalTrash(50)
-                .totalTime(50.0)
+                .totalTime(50)
                 .totalCoin(50)
                 .totalDistance(50.0)
                 .userMembership(false)
@@ -202,7 +200,6 @@ public class DummyData {
         MyBadge myBadge3 = MyBadge.builder()
                 .badge(badge)
                 .profile(profile3)
-                .myBadgeStatus(true)
                 .build();
         myBadgeRepository.save(myBadge3);
 

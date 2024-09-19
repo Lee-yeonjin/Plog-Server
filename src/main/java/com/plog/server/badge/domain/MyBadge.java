@@ -26,11 +26,11 @@ public class MyBadge {
     @JoinColumn(name = "badge_id", nullable = false)
     Badge badge;
 
-    @Column(nullable = false)
-    Boolean myBadgeStatus = true;
-
-    public boolean myBadgeStatus() {
-        // 배지의 활성 상태를 반환하는 로직
-        return this.myBadgeStatus; // active 필드가 true인 경우
-    }
+//    @Column(nullable = false)
+//    Boolean myBadgeStatus = true;
+//
+//    public boolean myBadgeStatus() {
+//        // 배지의 활성 상태를 반환하는 로직
+//        return this.myBadgeStatus; // active 필드가 true인 경우
+//    }
 }

@@ -63,7 +63,6 @@ public class BadgeService {
                 MyBadge newMyBadge = MyBadge.builder()
                         .profile(profile)
                         .badge(badge)
-                        .myBadgeStatus(true)
                         .build();
                 myBadgeRepository.save(newMyBadge);
             }
@@ -171,11 +170,9 @@ public class BadgeService {
         MyBadge newMyBadge = MyBadge.builder()
                 .profile(profile)
                 .badge(badge)
-                .myBadgeStatus(false)
                 .build();
         myBadgeRepository.save(newMyBadge);
 
         return "배지를 성공적으로 구매하였습니다.";
     }
-
 }

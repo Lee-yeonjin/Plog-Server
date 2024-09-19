@@ -126,17 +126,10 @@ public class PostService {
         boolean isLiked = checkIfLiked(profile, post);
         boolean isJoined = checkIfJoined(profile, post);
 
-        List<MyBadge> mainBadges = myBadgeRepository.findMainBadgesByProfile(post.getProfile());
-
-        Optional<Long> badgeIdOptional = mainBadges.stream()
-                .filter(myBadge -> myBadge.myBadgeStatus()) // 정확한 메서드 이름 사용
-                .map(myBadge -> myBadge.getBadge().getBadgeId())
-                .findFirst();
+        Long badgeId = profile.getBadge() != null ? profile.getBadge().getBadgeId() : 1; // Default to 1 if badge is null
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedDate = post.getTime().format(formatter);
-
-        int badgeId = badgeIdOptional.map(Long::intValue).orElse(1);
 
         return new PostDetailResponse(
                 post.getPostId(),
@@ -149,7 +142,7 @@ public class PostService {
                 post.getProfile().getUserNickname(),
                 isLiked,
                 isJoined,
-                badgeId
+                badgeId.intValue()
         );
     }
 
@@ -166,22 +159,16 @@ public class PostService {
         return postRepository.findAll().stream()
                 .sorted(Comparator.comparing(Post::getPostId).reversed())
                 .map(post -> {
-                    // 작성자의 배지 ID를 조회
-                    List<MyBadge> mainBadges = myBadgeRepository.findMainBadgesByProfile(post.getProfile());
-                    Optional<Long> badgeIdOptional = mainBadges.stream()
-                            .filter(myBadge -> myBadge.myBadgeStatus())
-                            .map(myBadge -> myBadge.getBadge().getBadgeId())
-                            .findFirst();
-
-                    // 배지 ID가 없으면 기본값 1 사용
-                    int badgeId = badgeIdOptional.map(Long::intValue).orElse(1);
+                    // 프로필에서 배지 ID를 조회
+                    Profile profile = post.getProfile();
+                    Long badgeId = profile.getBadge() != null ? profile.getBadge().getBadgeId() : 1; // 기본값 1 사용
 
                     return new PostListResponse(
                             post.getPostId(),
                             post.getTitle(),
                             post.getTime(), // LocalDate를 그대로 전달
-                            post.getProfile().getUserNickname(),
-                            badgeId // 배지 ID 추가
+                            profile.getUserNickname(),
+                            badgeId.intValue() // 배지 ID 추가
                     );
                 })
                 .collect(Collectors.toList());
@@ -190,16 +177,7 @@ public class PostService {
     // 내가 작성한 게시글 목록 조회
     public List<PostListResponse> getPostList(Profile profile) {
         // 작성자의 배지 ID를 조회
-        List<MyBadge> mainBadges = myBadgeRepository.findMainBadgesByProfile(profile);
-
-        // 활성화된 배지 ID를 가져옵니다.
-        Optional<Long> badgeIdOptional = mainBadges.stream()
-                .filter(MyBadge::myBadgeStatus)
-                .map(myBadge -> myBadge.getBadge().getBadgeId())
-                .findFirst();
-
-        // 배지 ID가 없으면 기본값 1 사용
-        int badgeId = badgeIdOptional.map(Long::intValue).orElse(1); // Long을 int로 변환
+        Long badgeId = profile.getBadge() != null ? profile.getBadge().getBadgeId() : 1; // 기본값 1 사용
 
         // Profile을 기반으로 게시글 목록 조회
         return postRepository.findByProfile(profile).stream()
@@ -209,7 +187,7 @@ public class PostService {
                         post.getTitle(),
                         post.getTime(), // LocalDate를 그대로 전달
                         post.getProfile().getUserNickname(),
-                        badgeId // 배지 ID 추가
+                        badgeId.intValue() // 배지 ID 추가
                 ))
                 .collect(Collectors.toList());
     }
@@ -244,22 +222,14 @@ public class PostService {
         return joinedPosts.stream()
                 .sorted(Comparator.comparing(Post::getPostId).reversed())
                 .map(post -> {
-                    // 게시글 작성자의 배지 ID를 조회
-                    List<MyBadge> authorBadges = myBadgeRepository.findMainBadgesByProfile(post.getProfile());
-                    Optional<Long> authorBadgeIdOptional = authorBadges.stream()
-                            .filter(MyBadge::myBadgeStatus)
-                            .map(myBadge -> myBadge.getBadge().getBadgeId())
-                            .findFirst();
-
-                    // 배지 ID가 없으면 기본값 1 사용
-                    int BadgeId = authorBadgeIdOptional.map(Long::intValue).orElse(1); // Long을 int로 변환
+                    Long badgeId = profile.getBadge() != null ? profile.getBadge().getBadgeId() : 1;
 
                     return new PostListResponse(
                             post.getPostId(),
                             post.getTitle(),
                             post.getTime(), // LocalDate를 그대로 전달
                             post.getProfile().getUserNickname(),
-                            BadgeId // 게시글 작성자의 배지 ID 추가
+                            badgeId.intValue() // 게시글 작성자의 배지 ID 추가
                     );
                 })
                 .collect(Collectors.toList());
@@ -333,23 +303,14 @@ public class PostService {
         return likedPosts.stream()
                 .map(like -> {
                     Post post = like.getPost();
-
-                    // 게시글 작성자의 배지 ID를 조회
-                    List<MyBadge> authorBadges = myBadgeRepository.findMainBadgesByProfile(post.getProfile());
-                    Optional<Long> authorBadgeIdOptional = authorBadges.stream()
-                            .filter(MyBadge::myBadgeStatus)
-                            .map(myBadge -> myBadge.getBadge().getBadgeId())
-                            .findFirst();
-
-                    // 배지 ID가 없으면 기본값 1 사용
-                    int badgeId = authorBadgeIdOptional.map(Long::intValue).orElse(1);
+                    Long badgeId = profile.getBadge() != null ? profile.getBadge().getBadgeId() : 1;
 
                     return new LikeResponse(
                             post.getPostId(),
                             post.getTitle(),
                             post.getTime(),
                             post.getProfile().getUserNickname(),
-                            badgeId // 게시글 작성자의 배지 ID 추가
+                            badgeId.intValue()// 게시글 작성자의 배지 ID 추가
                     );
                 })
                 .sorted(Comparator.comparingLong(LikeResponse::getPostId).reversed())
