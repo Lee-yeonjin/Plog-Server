@@ -29,7 +29,7 @@ public class RankScheduled {
     private final BadgeRepository badgeRepository;
     private final MyBadgeRepository myBadgeRepository;
 
-    @Scheduled(cron = "0 17 1 * * MON")
+    @Scheduled(cron = "0 0 0 * * SUN")
     @Transactional
     public void resetRankings() {
         log.info("Resetting rankings...");

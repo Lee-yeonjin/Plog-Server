@@ -14,4 +14,5 @@ import java.util.UUID;
 public class LoginResponse {
     private UUID userUUID;
     private String userNickname;
+    private boolean userMembership;
 }

@@ -24,8 +24,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static java.lang.Boolean.TRUE;
-
 @Component
 @Transactional
 @RequiredArgsConstructor

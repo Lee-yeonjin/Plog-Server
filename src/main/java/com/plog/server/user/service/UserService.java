@@ -2,6 +2,7 @@ package com.plog.server.user.service;
 
 import com.plog.server.badge.domain.Badge;
 import com.plog.server.badge.repository.BadgeRepository;
+import com.plog.server.mission.service.MissionService;
 import com.plog.server.post.service.FcmService;
 import com.plog.server.profile.domain.Profile;
 import com.plog.server.profile.repository.ProfileRepository;
@@ -31,6 +32,7 @@ public class UserService {
     private final ProfileService profileService;
     private final ProfileRepository profileRepository;
     private final BadgeRepository badgeRepository;
+    private final MissionService missionService;
     private final FcmService fcmService;
 
     // UUID 조회 추가
@@ -53,17 +55,23 @@ public class UserService {
 
         Optional<Profile> profileOptional = profileService.getProfileByUserUUID(user.getUserUUID());
         String userNickname;
+        boolean userMembership;
 
         if (profileOptional.isPresent()) {
             userNickname = profileOptional.get().getUserNickname();
-
+            userMembership = profileOptional.get().isUserMembership();
             fcmService.saveOrUpdateFcm(profileOptional.get(), deviceToken);
+
+            // UserMission이 존재하지 않을 때만 생성
+            boolean missionExists = missionService.checkUserMissionExists(profileOptional.get());
+            if (!missionExists) {
+                missionService.createUserMission(profileOptional.get());
+            }
         } else {
             throw new IllegalArgumentException("프로필을 찾을 수 없습니다.");
         }
 
-        return new LoginResponse(user.getUserUUID(), userNickname);
-
+        return new LoginResponse(user.getUserUUID(), userNickname, userMembership);
     }
 
     //임시 회원 가입

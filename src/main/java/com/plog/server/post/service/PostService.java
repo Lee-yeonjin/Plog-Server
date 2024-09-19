@@ -44,6 +44,12 @@ public class PostService {
     private final FcmService fcmService;
     private final FcmRepository fcmRepository;
 
+    // 미션 - 오늘 작성된 게시글 확인
+    public boolean checkPostsByProfileToday(Profile profile) {
+        return postRepository.findByProfile(profile).stream()
+                .anyMatch(post -> post.getTime().isEqual(LocalDate.now()));
+    }
+
     // 게시글 아이디 찾기
     public Post findPostById(Long postId) {
         return postRepository.findById(postId)

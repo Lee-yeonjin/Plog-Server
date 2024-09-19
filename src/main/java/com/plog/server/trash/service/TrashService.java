@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,6 +34,34 @@ public class TrashService {
     private final ProfileRepository profileRepository;
     private final S3UploaderService s3UploaderService;
     private final ActivityPhotoRepository activityPhotoRepository;
+    private final ActivityRepository activityRepository;
+
+    public boolean hasCollectedPlasticToday(Profile profile, int requiredCount) {
+        List<Activity> activities = activityRepository.findByProfileAndPloggingDate(profile, LocalDate.now());
+
+        int totalPlasticCollected = activities.stream()
+                .map(activity -> trashRepository.findByActivity(activity))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .mapToInt(Trash::getPlastic)
+                .sum();
+
+        return totalPlasticCollected >= requiredCount; // 15개 이상 수집된 경우 true 반환
+    }
+
+    public boolean hasCollectedGarbageToday(Profile profile, int requiredCount) {
+        // 오늘 날짜의 활동을 가져옵니다.
+        List<Activity> activities = activityRepository.findByProfileAndPloggingDate(profile, LocalDate.now());
+
+        int totalPlasticCollected = activities.stream()
+                .map(activity -> trashRepository.findByActivity(activity))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .mapToInt(Trash::getGarbage)
+                .sum();
+
+        return totalPlasticCollected >= requiredCount; // 15개 이상 수집된 경우 true 반환
+    }
 
     public S3FileResponse createTrash(TrashRequest trashRequest, Activity activity, UUID uuid, MultipartFile photo) {
         Profile profile = profileRepository.findByUserUserUUID(uuid)
@@ -39,7 +69,6 @@ public class TrashService {
 
         S3FileResponse s3FileResponse = new S3FileResponse("", "");
 
-        // 사진 파일이 있는 경우 처리
         if (photo != null && !photo.isEmpty()) {
             try {
                 // 파일 업로드 및 URL 생성

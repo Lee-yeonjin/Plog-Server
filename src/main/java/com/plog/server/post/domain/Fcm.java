@@ -18,6 +18,7 @@ public class Fcm{
     private Long FcmId;
 
     @Column(columnDefinition = "boolean default false")
+    @Builder.Default
     private boolean notificationEnabled = false; // 알림 설정 여부
     private Double latitude; // 알림 위도
     private Double longitude; // 알림 경도
