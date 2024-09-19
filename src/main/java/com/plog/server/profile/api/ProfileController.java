@@ -40,6 +40,18 @@ public class ProfileController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @PostMapping("/{uuid}/membershipcancel")
+    public ResponseEntity<ApiResponse<Boolean>> membershipcancel(@PathVariable UUID uuid) {
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
+
+        profile.setUserMembership(false);
+        profileRepository.save(profile);
+
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>("멤버십 해지 성공", profile.isUserMembership());
+        return ResponseEntity.ok(apiResponse);
+    }
+
     @GetMapping("/active")
     public ResponseEntity<ApiResponse<List<ActiveProfileResponse>>> getActivePloggingDetails() {
         List<ActiveProfileResponse> activeProfiles = profileService.getActivePloggingDetails();
