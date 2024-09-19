@@ -1,4 +1,4 @@
-package com.plog.server.global;
+package com.plog.server.global.data;
 
 import com.plog.server.badge.domain.Badge;
 import com.plog.server.badge.domain.MyBadge;
