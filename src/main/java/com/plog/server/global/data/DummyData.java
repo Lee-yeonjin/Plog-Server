@@ -38,6 +38,8 @@ public class DummyData {
     private final PostRepository postRepository;
     private final GeocodeService geocodeService;
 
+    double totalTimeInSeconds = 50 * 3600 - 5;
+
     @PostConstruct
     public void init (){
         User user = User.builder()
@@ -59,7 +61,7 @@ public class DummyData {
                 .user(user)
                 .badge(badge)
                 .totalTrash(0)
-                .totalTime(0.0)
+                .totalTime(totalTimeInSeconds)
                 .totalCoin(0)
                 .totalDistance(0.0)
                 .userMembership(false)

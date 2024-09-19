@@ -111,6 +111,9 @@ public class ActivityService {
 
         // 사용자 플로깅 상태 업데이트
         profile.setPloggingStatus(false);
+        profile.addToTotalDistance(activityRequest.getDistance());
+        profile.addToTotalTime(activityRequest.getActivityTime());
+
         profileRepository.save(profile);
 
         // 사용자와 연관된 아직 Activity와 연결되지 않은 Location 조회
