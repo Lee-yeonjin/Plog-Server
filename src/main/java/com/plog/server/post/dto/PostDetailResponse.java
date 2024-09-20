@@ -23,13 +23,13 @@ public class PostDetailResponse {
     private String userNickname;
     private boolean isLiked;
     private boolean isJoined;
-    private Integer badgeIds;
+    private Integer badgeId;
 
     private double ploggingLatitude;
 
     private double ploggingLongitude;
 
-    public PostDetailResponse(Long postId, String title, String content, String plogPlace, String meetPlace, String time, String schedule, String userNickname, boolean isLiked, boolean isJoined, Integer badgeIds) {
+    public PostDetailResponse(Long postId, String title, String content, String plogPlace, String meetPlace, String time, String schedule, String userNickname, boolean isLiked, boolean isJoined, Integer badgeId) {
         this.postId = postId;
         this.title = title;
         this.content = content;
@@ -40,6 +40,6 @@ public class PostDetailResponse {
         this.userNickname = userNickname;
         this.isLiked = isLiked;
         this.isJoined = isJoined;
-        this.badgeIds = badgeIds;
+        this.badgeId = badgeId;
     }
 }
