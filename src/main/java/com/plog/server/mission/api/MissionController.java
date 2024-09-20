@@ -62,6 +62,20 @@ public class MissionController {
             return ResponseEntity.ok(new ApiResponse("미션 실패", null));
         }
     }
+
+    @PostMapping("/{uuid}/{missionid}/advertisement")
+    public ResponseEntity<ApiResponse> advertisement(@PathVariable UUID uuid, @PathVariable Integer missionid) {
+        Profile profile = profileRepository.findByUserUserUUID(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
+
+        Long missionId_Long = missionid.longValue();
+
+        Mission mission = missionService.findMissionById(missionId_Long)
+                .orElseThrow(() -> new IllegalArgumentException("미션을 찾을 수 없습니다"));
+
+        missionService.completeMission(profile, mission);
+        return ResponseEntity.ok(new ApiResponse("미션 성공", null));
+    }
 }
 
 
