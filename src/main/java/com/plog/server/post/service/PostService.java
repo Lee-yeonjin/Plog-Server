@@ -126,7 +126,7 @@ public class PostService {
         boolean isLiked = checkIfLiked(profile, post);
         boolean isJoined = checkIfJoined(profile, post);
 
-        Long badgeId = profile.getBadge() != null ? profile.getBadge().getBadgeId() : 1; // Default to 1 if badge is null
+        Long badgeId = post.getProfile().getBadge() != null ? post.getProfile().getBadge().getBadgeId() : 1;  // Default to 1 if badge is null
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedDate = post.getTime().format(formatter);
