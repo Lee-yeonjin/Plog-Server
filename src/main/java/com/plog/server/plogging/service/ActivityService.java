@@ -1,6 +1,5 @@
 package com.plog.server.plogging.service;
 
-import com.plog.server.mission.repository.UserMissionRepository;
 import com.plog.server.plogging.domain.Activity;
 import com.plog.server.plogging.domain.ActivityPhoto;
 import com.plog.server.plogging.domain.Location;
@@ -113,16 +112,15 @@ public class ActivityService {
     }
 
     @Transactional
-    public Profile startActivity(UUID uuid) {
+    public boolean startActivity(UUID uuid) {
 
         Profile profile = profileRepository.findByUserUserUUID(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("프로필이 없습니다" + uuid));
 
         // 사용자 플로깅 상태 업데이트
         profile.setPloggingStatus(true);
-        profileRepository.save(profile);
 
-        return profile;
+        return true;
     }
 
     @Transactional

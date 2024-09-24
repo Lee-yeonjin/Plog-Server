@@ -28,7 +28,7 @@ public class ActivityController {
     //플로깅 시작
     @PostMapping("/start/{uuid}")
     public ResponseEntity<ApiResponse> startActivity(@PathVariable UUID uuid) {
-        Profile profile = activityService.startActivity(uuid);
+        boolean profile = activityService.startActivity(uuid);
         ApiResponse response = new ApiResponse("플로깅 시작", profile);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
