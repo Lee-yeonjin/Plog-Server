@@ -49,12 +49,11 @@ public class ActivityController {
     }
 
     //루트 선택시 상세 조회
-    @GetMapping("/{uuid}/{activityId}")
+    @GetMapping("/{activityId}/route-details")
     public ApiResponse<RouteDetailResponse> getRouteDetailByUserUUID(
-            @PathVariable UUID uuid,
             @PathVariable Long activityId) {
 
-        RouteDetailResponse activity = activityService.getRouteDetailByUserUUID(uuid, activityId);
+        RouteDetailResponse activity = activityService.getRouteDetailByActivityId(activityId);
         return new ApiResponse<>("루트 조회 성공", activity);
     }
 

@@ -192,7 +192,7 @@ public class ActivityService {
                 .collect(Collectors.toList());
     }
 
-    //루트 상세 조회 (위도, 경도 반환)
+    //해당 유저의 루트 상세 조회
     public RouteDetailResponse getRouteDetailByUserUUID(UUID uuid, Long activityId) {
         // 사용자 조회
         Profile profile = profileRepository.findByUserUserUUID(uuid)
@@ -201,6 +201,17 @@ public class ActivityService {
         // 특정 활동 조회
         Activity activity = activityRepository.findByProfileAndActivityId(profile, activityId)
                 .orElseThrow(() -> new IllegalArgumentException("Activity not found with ID: " + activityId));
+
+        List<Location> locations = activity.getLocations();
+
+        return new RouteDetailResponse(locations);
+    }
+
+    //루트 상세 조회
+    public RouteDetailResponse getRouteDetailByActivityId(Long activityId) {
+
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("활동을 찾을 수 없습니다." + activityId));
 
         List<Location> locations = activity.getLocations();
 
