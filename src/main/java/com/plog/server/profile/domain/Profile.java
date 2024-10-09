@@ -51,8 +51,8 @@ public class Profile {
         if (this.totalTrash == null) this.totalTrash = 0;
         if (this.totalTime == null) this.totalTime = 0;
         if (this.totalCoin == null) this.totalCoin = 0;
-        this.userMembership = false;
-        this.ploggingStatus = false;
+        this.userMembership = this.userMembership;
+        this.ploggingStatus = this.ploggingStatus;
     }
     public void setTotalCoin(int totalCoin) { this.totalCoin = totalCoin; }
     public void addToTotalDistance(Double distance) { this.totalDistance += distance; }
