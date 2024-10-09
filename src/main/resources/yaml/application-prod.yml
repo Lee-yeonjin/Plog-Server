@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+#log setting
+logging:
+  level:
+    com:
+      plog:
+        Server: debug
+
+#email url
+email:
+  config:
+    baseUrl: "http://15.164.152.246:8080"
+
+spring:
+  config:
+    import: optional:file:.env[.properties]
+    activate:
+      on-profile: prod
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://15.164.152.246:3306/plog?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: plog
+    password: 1234
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: false
