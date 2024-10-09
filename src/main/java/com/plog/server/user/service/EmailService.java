@@ -51,13 +51,13 @@ public class EmailService {
     public  MimeMessage createVerifyLink(UserTemp userTemp, EmailToken emailToken)throws MessagingException {
         // 이메일 전송을 위한 MimeMessage 생성 및 설정
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true,"UTF-8");
         helper.setTo(userTemp.getTempEmail());
-        helper.setSubject("회원가입 이메일 인증");
+        helper.setSubject("플log 회원가입 이메일 인증");
         helper.setFrom("nkdy50315031@gmail.com");
 
         String emailContent
-                = "<a href='" + emailConfig.getBaseUrl() + CONFIRM_EMAIL_PATH + "?uuid=" + emailToken.getEmailUuid() + "'>이메일 확인</a>";
+                = "<a href='" + emailConfig.getBaseUrl() + CONFIRM_EMAIL_PATH + "?uuid=" + emailToken.getEmailUuid() + "'>플log 이메일 인증</a>";
         helper.setText(emailContent, true);
         return  mimeMessage;
     }

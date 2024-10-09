@@ -41,7 +41,7 @@ public class MailConfig {
         properties.setProperty("mail.smtp.starttls.enable", "true");
         properties.setProperty("mail.debug", "true");
         properties.setProperty("mail.smtp.ssl.trust","smtp.gmail.com");
-        properties.setProperty("mail.smtp.ssl.enable","true");
+        properties.setProperty("mail.smtp.ssl.enable","false");
 
         return properties;
     }
